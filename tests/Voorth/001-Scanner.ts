@@ -35,39 +35,36 @@ function ScannerTest001 () {
         <+++Hello*>>=
     `;
 
-    const toTest = [
-        Voorth.Scanner.isNumber, Voorth.Scanner.isComment, Voorth.Scanner.isNumber,
-        Voorth.Scanner.isNumber, Voorth.Scanner.isNumber, Voorth.Scanner.isNumber,
-        Voorth.Scanner.isNumber, Voorth.Scanner.isNumber, Voorth.Scanner.isComment,
-        Voorth.Scanner.isNumber,
+    let expected : Voorth.Scanner.ScanType[] = [
+        Voorth.Scanner.ScanType.NUMBER,
+        Voorth.Scanner.ScanType.COMMENT,
+        Voorth.Scanner.ScanType.NUMBER, Voorth.Scanner.ScanType.NUMBER,
+        Voorth.Scanner.ScanType.NUMBER, Voorth.Scanner.ScanType.NUMBER,
+        Voorth.Scanner.ScanType.NUMBER, Voorth.Scanner.ScanType.NUMBER,
+        Voorth.Scanner.ScanType.COMMENT,
+        Voorth.Scanner.ScanType.NUMBER,
 
-        Voorth.Scanner.isString, Voorth.Scanner.isString, Voorth.Scanner.isString,
-        Voorth.Scanner.isString, Voorth.Scanner.isString, Voorth.Scanner.isString,
+        Voorth.Scanner.ScanType.STRING, Voorth.Scanner.ScanType.STRING,
+        Voorth.Scanner.ScanType.STRING, Voorth.Scanner.ScanType.STRING,
+        Voorth.Scanner.ScanType.STRING, Voorth.Scanner.ScanType.STRING,
 
-        Voorth.Scanner.isBoolean, Voorth.Scanner.isBoolean,
-
-        Voorth.Scanner.isPlatform, Voorth.Scanner.isPlatform,
-
-        Voorth.Scanner.isControl, Voorth.Scanner.isControl,
-        Voorth.Scanner.isControl, Voorth.Scanner.isControl, Voorth.Scanner.isControl,
-        Voorth.Scanner.isControl, Voorth.Scanner.isControl,
-        Voorth.Scanner.isControl, Voorth.Scanner.isControl, Voorth.Scanner.isControl,
+        Voorth.Scanner.ScanType.BOOLEAN, Voorth.Scanner.ScanType.BOOLEAN,
     ];
 
     let t = 0;
     let f = 0;
-    for (const str of Voorth.Scanner.scan(source)) {
-        let test : (s : string) => boolean = Voorth.Scanner.isWord;
-        if (toTest.length) {
-            test = toTest.shift() as (s : string) => boolean;
+    for (const got of Voorth.Scanner.scan(source)) {
+        let exp : Voorth.Scanner.ScanType = Voorth.Scanner.ScanType.WORD;
+        if (expected.length) {
+            exp = expected.shift() as Voorth.Scanner.ScanType;
         }
         t++;
-        if (test(str)) {
-            console.log(`ok ${t} - (${str.trim()}) matches (${test.name})`);
+        if (got.type == exp) {
+            console.log(`ok ${t} - (${got.value.trim()}) matches expected(${exp})`);
         }
         else {
             f++;
-            console.log(`not ok ${t} - (${str.trim()}) does not match (${test.name})`);
+            console.log(`not ok ${t} - (${got.value.trim()}) does not match expected(${exp}) got(${got.type})`);
         }
     }
 

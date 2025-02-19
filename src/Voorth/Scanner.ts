@@ -2,41 +2,49 @@
 
 export namespace Scanner {
 
-    export type Scanner = Generator<string, void, void>
+    export enum ScanType {
+        NUMBER   = 'NUMBER',
+        STRING   = 'STRING',
+        BOOLEAN  = 'BOOLEAN',
+        WORD     = 'WORD',
+        COMMENT  = 'COMMENT',
+    }
 
-    const NUMBERS  = /-?[0-9][0-9_]*/;
-    const STRINGS  = /"[^"]*"|'[^']*'/;
-    const BOOLEANS = /#t|#f/;
-    const WORDS    = /[&.:]?\S+/;
-    const CONTROLS = /IF|THEN|ELSE|BEGIN|UNTIL|WHILE|REPEAT|DO|LOOP/;
-    const PLATFORM = /BRANCH[!?]|INVOKE\!/;
-    const COMMENT  = /\/\/\s.*\n/;
+    const IS_NUMBER   = /^-?[0-9][0-9_]*$/;
+    const IS_STRING   = /^"[^"]*"|'[^']*'$/;
+    const IS_BOOLEAN  = /^#t|#f$/;
+    const IS_WORD     = /^[&.:]?\S+$/;
+    const IS_COMMENT  = /^\/\/\s.*\n$/;
 
-    const SPLITTER = new RegExp(
-        [
-            COMMENT,
-            CONTROLS,
-            PLATFORM,
-            STRINGS,
-            NUMBERS,
-            BOOLEANS,
-            WORDS,
-        ].map((r) => r.source).join('|'), 'g'
-    );
+    const SPLITTER = /\/\/\s.*\n|"([^"])*"|'([^'])*'|\S+/g;
 
-    export function* scan (src : string) : Scanner {
+    export type Scan       = { type : ScanType, value : string };
+    export type ScanStream = Generator<Scan, void, void>
+
+    export function* scan (src : string) : ScanStream {
         let match;
         while ((match = SPLITTER.exec(src)) !== null) {
             let m = match[0] as string;
-            yield m;
+            switch (true) {
+            case IS_COMMENT.test(m):
+                yield { type: ScanType.COMMENT, value : m }
+                break;
+            case IS_STRING.test(m):
+                yield { type: ScanType.STRING, value : m }
+                break;
+            case IS_NUMBER.test(m):
+                yield { type: ScanType.NUMBER, value : m }
+                break;
+            case IS_BOOLEAN.test(m):
+                yield { type: ScanType.BOOLEAN, value : m }
+                break;
+            case IS_WORD.test(m):
+                yield { type: ScanType.WORD, value : m }
+                break;
+            default:
+                throw new Error(`Unrecognized match ${m}`);
+            }
         }
     }
 
-    export function isNumber   (s : string) : boolean { return NUMBERS.test(s)  }
-    export function isString   (s : string) : boolean { return STRINGS.test(s)  }
-    export function isBoolean  (s : string) : boolean { return BOOLEANS.test(s) }
-    export function isWord     (s : string) : boolean { return WORDS.test(s)    }
-    export function isControl  (s : string) : boolean { return CONTROLS.test(s) }
-    export function isPlatform (s : string) : boolean { return PLATFORM.test(s) }
-    export function isComment  (s : string) : boolean { return COMMENT.test(s)  }
 }
