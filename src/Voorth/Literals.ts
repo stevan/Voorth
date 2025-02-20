@@ -22,6 +22,10 @@ export namespace Literals {
         // equals
     }
 
+    export function assertBool (l : Literal) : asserts l is Bool {
+        if (!(l instanceof Bool)) throw new Error(`Not Bool (${JSON.stringify(l)})`)
+    }
+
     export class Num implements Literal {
         constructor(public value : number) {}
         toNum  () : number  { return this.value }
@@ -33,6 +37,10 @@ export namespace Literals {
         // add, sub, mul, div, mod
         // equals
         // compare
+    }
+
+    export function assertNum (l : Literal) : asserts l is Num {
+        if (!(l instanceof Num)) throw new Error(`Not Num (${JSON.stringify(l)})`)
     }
 
     export class Str implements Literal {
@@ -48,6 +56,10 @@ export namespace Literals {
         // compare
     }
 
+    export function assertStr (l : Literal) : asserts l is Str {
+        if (!(l instanceof Str)) throw new Error(`Not Str (${JSON.stringify(l)})`)
+    }
+
     export class WordRef implements Literal {
         constructor(public name : string) {}
         toNum  () : number  { throw new Error("Cannot convert WordRef to Num") }
@@ -56,6 +68,10 @@ export namespace Literals {
         // TODO:
         // length?
         // equals
+    }
+
+    export function assertWordRef (l : Literal) : asserts l is WordRef {
+        if (!(l instanceof WordRef)) throw new Error(`Not Bool (${JSON.stringify(l)})`)
     }
 
     // -------------------------------------------------------------------------
@@ -78,6 +94,10 @@ export namespace Literals {
         // equals
     }
 
+    export function assertTuple (l : Literal) : asserts l is Tuple {
+        if (!(l instanceof Tuple)) throw new Error(`Not Tuple (${JSON.stringify(l)})`)
+    }
+
     export class Stack implements Literal {
         private $items : Literal[] = [];
 
@@ -98,6 +118,10 @@ export namespace Literals {
         // equals
     }
 
+    export function assertStack (l : Literal) : asserts l is Stack {
+        if (!(l instanceof Stack)) throw new Error(`Not Stack (${JSON.stringify(l)})`)
+    }
+
     export class Queue implements Literal {
         private $items : Literal[] = [];
 
@@ -115,6 +139,10 @@ export namespace Literals {
         // TODO:
         // length
         // equals
+    }
+
+    export function assertQueue (l : Literal) : asserts l is Queue {
+        if (!(l instanceof Queue)) throw new Error(`Not Queue (${JSON.stringify(l)})`)
     }
 
 }

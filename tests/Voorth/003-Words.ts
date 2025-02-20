@@ -23,7 +23,7 @@ function Test003 () {
     test.is(out[0], 'Hello', '... got the first output');
     test.is(out[1], 'World!', '... got the second output');
 
-    let dict = new Voorth.Library.Dictionary();
+    let dict = new Voorth.Library.RuntimeDict();
     dict.bind(w1);
     dict.bind(w2);
 
