@@ -1,0 +1,120 @@
+
+export namespace Literals {
+
+    // -------------------------------------------------------------------------
+    // Scalars
+    // -------------------------------------------------------------------------
+
+    export interface Literal {
+        toNum  () : number;
+        toBool () : boolean;
+        toStr  () : string;
+    }
+
+    export class Bool implements Literal {
+        constructor(public value : boolean) {}
+        toNum  () : number  { return this.value ? 1 : 0 }
+        toBool () : boolean { return this.value }
+        toStr  () : string  { return this.value.toString() }
+
+        // TODO:
+        // invert
+        // equals
+    }
+
+    export class Num implements Literal {
+        constructor(public value : number) {}
+        toNum  () : number  { return this.value }
+        toBool () : boolean { return this.value != 0 ? true : false }
+        toStr  () : string  { return this.value.toString() }
+
+        // TODO:
+        // negate
+        // add, sub, mul, div, mod
+        // equals
+        // compare
+    }
+
+    export class Str implements Literal {
+        constructor(public value : string) {}
+        toNum  () : number  { return parseInt(this.value) }
+        toBool () : boolean { return this.value != '' ? true : false }
+        toStr  () : string  { return this.value }
+
+        // TODO:
+        // length
+        // concat
+        // equals
+        // compare
+    }
+
+    export class WordRef implements Literal {
+        constructor(public name : string) {}
+        toNum  () : number  { throw new Error("Cannot convert WordRef to Num") }
+        toBool () : boolean { return true }
+        toStr  () : string  { return "&" + this.name }
+        // TODO:
+        // length?
+        // equals
+    }
+
+    // -------------------------------------------------------------------------
+    // Containers
+    // -------------------------------------------------------------------------
+
+    export class Tuple implements Literal {
+        private $items : Literal[] = [];
+
+        constructor(public size : number) {}
+        toNum  () : number  { throw new Error("TODO") }
+        toBool () : boolean { throw new Error("TODO") }
+        toStr  () : string  { throw new Error("TODO") }
+
+        get (i : number) : Literal { return this.$items[i] as Literal }
+        set (i : number, l : Literal) : void { this.$items[i] = l }
+
+        // TODO:
+        // length
+        // equals
+    }
+
+    export class Stack implements Literal {
+        private $items : Literal[] = [];
+
+        constructor() {}
+        toNum  () : number  { throw new Error("TODO") }
+        toBool () : boolean { throw new Error("TODO") }
+        toStr  () : string  { throw new Error("TODO") }
+
+        get size () : number { return this.$items.length }
+
+        push (l : Literal) : void { this.$items.push(l) }
+        pop  () : Literal { return this.$items.pop()  as Literal }
+        peek () : Literal { return this.$items.at(-1) as Literal }
+        drop () : void    { this.$items.pop(); }
+
+        // TODO:
+        // length
+        // equals
+    }
+
+    export class Queue implements Literal {
+        private $items : Literal[] = [];
+
+        constructor() {}
+        toNum  () : number  { throw new Error("TODO") }
+        toBool () : boolean { throw new Error("TODO") }
+        toStr  () : string  { throw new Error("TODO") }
+
+        get size () : number { return this.$items.length }
+
+        enqueue (l : Literal) : void { this.$items.unshift(l) }
+        dequeue () : Literal { return this.$items.pop() as Literal }
+        drop    () : void  { this.$items.pop(); }
+
+        // TODO:
+        // length
+        // equals
+    }
+
+}

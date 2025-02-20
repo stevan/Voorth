@@ -3,7 +3,7 @@ import { Test } from '../Test';
 
 import * as Voorth from '../../src/Voorth'
 
-function DictionaryTest002 () {
+function Test002 () {
     let test = new Test.Simple();
 
     let d = new Voorth.Library.Dictionary();
@@ -14,13 +14,14 @@ function DictionaryTest002 () {
     let bar = Voorth.Words.createNativeWord('bar', (r) => {});
     d.bind(bar);
 
-    test.ok(d.contains('foo'), '... we have the foo entry');
-    test.ok(d.contains('bar'), '... we have the bar entry');
+    test.ok(d.lookup(new Voorth.Literals.WordRef('foo')) != undefined, '... we have the foo entry');
+    test.ok(d.lookup(new Voorth.Literals.WordRef('bar')) != undefined, '... we have the bar entry');
+    test.ok(d.lookup(new Voorth.Literals.WordRef('baz')) == undefined, '... we do not have the baz entry');
 
-    test.ok(d.fetch('foo') === foo, '... we have the expected foo entry');
-    test.ok(d.fetch('bar') === bar, '... we have the expected bar entry');
+    test.ok(d.lookup(new Voorth.Literals.WordRef('foo')) === foo, '... we have the expected foo entry');
+    test.ok(d.lookup(new Voorth.Literals.WordRef('bar')) === bar, '... we have the expected bar entry');
 
     test.done();
 }
 
-DictionaryTest002();
+Test002();

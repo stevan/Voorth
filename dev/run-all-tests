@@ -1,2 +1,2 @@
 #!/bin/sh
-prove -r --ext '.ts' -e 'npx ts-node' $@
+prove -r --ext '.ts' -e 'npx ts-node' tests/Voorth/

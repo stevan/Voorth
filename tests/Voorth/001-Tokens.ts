@@ -2,7 +2,7 @@
 import { Test } from '../Test';
 import * as Voorth from '../../src/Voorth';
 
-function TokensTest001 () {
+function Test001 () {
     let test = new Test.Simple();
 
     let source = `
@@ -37,31 +37,31 @@ function TokensTest001 () {
         <+++Hello*>>=
     `;
 
-    let expected : Voorth.Tokens.Type[] = [
-        Voorth.Tokens.Type.NUMBER,
-        Voorth.Tokens.Type.COMMENT,
-        Voorth.Tokens.Type.NUMBER, Voorth.Tokens.Type.NUMBER,
-        Voorth.Tokens.Type.NUMBER, Voorth.Tokens.Type.NUMBER,
-        Voorth.Tokens.Type.NUMBER, Voorth.Tokens.Type.NUMBER,
-        Voorth.Tokens.Type.COMMENT,
-        Voorth.Tokens.Type.NUMBER,
+    let expected : string[] = [
+        'NUMBER',
+        'COMMENT',
+        'NUMBER', 'NUMBER',
+        'NUMBER', 'NUMBER',
+        'NUMBER', 'NUMBER',
+        'COMMENT',
+        'NUMBER',
 
-        Voorth.Tokens.Type.STRING, Voorth.Tokens.Type.STRING,
-        Voorth.Tokens.Type.STRING, Voorth.Tokens.Type.STRING,
-        Voorth.Tokens.Type.STRING, Voorth.Tokens.Type.STRING,
+        'STRING', 'STRING',
+        'STRING', 'STRING',
+        'STRING', 'STRING',
 
-        Voorth.Tokens.Type.BOOLEAN, Voorth.Tokens.Type.BOOLEAN,
+        'BOOLEAN', 'BOOLEAN',
     ];
 
     for (const got of Voorth.Tokens.tokenize(source)) {
-        let exp : Voorth.Tokens.Type = Voorth.Tokens.Type.WORD;
+        let exp : string = 'WORD';
         if (expected.length) {
-            exp = expected.shift() as Voorth.Tokens.Type;
+            exp = expected.shift() as string;
         }
-        test.is(got.type, exp, `(${got.value.trim()}) matches (${exp}) ... got(${got.type})`);
+        test.is(got.type as string, exp, `(${got.value.trim()}) matches (${exp}) ... got(${got.type})`);
     }
 
     test.done();
 }
 
-TokensTest001();
+Test001();

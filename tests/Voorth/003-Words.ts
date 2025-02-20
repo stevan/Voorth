@@ -3,7 +3,7 @@ import { Test } from '../Test';
 
 import * as Voorth from '../../src/Voorth'
 
-function Test000 () {
+function Test003 () {
     let test = new Test.Simple();
 
     let out : string[] = [];
@@ -17,11 +17,8 @@ function Test000 () {
     });
 
     let runtime = new Voorth.Runtime();
-    let tape    = new Voorth.Words.Tape([ w1, w2 ]);
-
-    for (const w of tape.play()) {
-        w.body(runtime);
-    }
+    w1.body(runtime);
+    w2.body(runtime);
 
     test.is(out[0], 'Hello', '... got the first output');
     test.is(out[1], 'World!', '... got the second output');
@@ -30,10 +27,10 @@ function Test000 () {
     dict.bind(w1);
     dict.bind(w2);
 
-    test.ok(dict.fetch('HELLO') === w1, '... fetched the right word');
-    test.ok(dict.fetch('WORLD') === w2, '... fetched the right word');
+    test.ok(dict.lookup('HELLO') === w1, '... fetched the right word');
+    test.ok(dict.lookup('WORLD') === w2, '... fetched the right word');
 
     test.done();
 }
 
-Test000();
+Test003();

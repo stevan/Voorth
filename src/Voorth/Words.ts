@@ -1,36 +1,22 @@
 
-import { Tokens }  from './Tokens';
-import { Runtime } from './Runtime';
+import { Tokens }     from './Tokens';
+import { ExecTokens } from './ExecTokens';
+import { Runtime }    from './Runtime';
 
 export namespace Words {
 
-    export type UserWordBody     = Tape;
+    export type UserWordBody     = ExecTokens.Tape;
     export type NativeWordBody   = (runtime : Runtime) => void;
-    export type CompilerWordBody = (tokens : Tokens.Stream, tape : Tape) => void;
+    export type CompilerWordBody = (tokens : Tokens.TokenStream, tape : ExecTokens.Tape) => void;
 
-    export interface UserWord {
-        type : 'USER';
-        name : string;
-        body : UserWordBody;
-    }
-
-    export interface NativeWord {
-        type : 'NATIVE';
-        name : string;
-        body : NativeWordBody;
-    }
-
-    export interface CompilerWord {
-        type : 'COMPILER';
-        name : string;
-        body : CompilerWordBody;
-    }
+    export type UserWord     = { type : 'USER',     name : string, body : UserWordBody }
+    export type NativeWord   = { type : 'NATIVE',   name : string, body : NativeWordBody }
+    export type CompilerWord = { type : 'COMPILER', name : string, body : CompilerWordBody }
 
     export type RuntimeWord  = UserWord | NativeWord;
     export type Word         = UserWord | NativeWord | CompilerWord;
 
     export type CompiledStream  = Generator<RuntimeWord, void, void>;
-    export type ExecutionStream = Generator<NativeWord, void, void>;
 
     // -------------------------------------------------------------------------
 
@@ -68,53 +54,5 @@ export namespace Words {
     }
 
     // -------------------------------------------------------------------------
-
-    export class Tape {
-        private $index   : number;
-        private $words   : RuntimeWord[];
-        private $invoke? : RuntimeWord;
-
-        constructor (words? : RuntimeWord[]) {
-            this.$index  = 0;
-            this.$words = words ? words : new Array<RuntimeWord>();
-        }
-
-        invoke (w : RuntimeWord) { this.$invoke = w }
-
-        length () : number { return this.$words.length }
-
-        load (source : CompiledStream) {
-            this.$words.push(...source);
-        }
-
-        jump (offset : number) : void {
-            this.$index += offset;
-        }
-
-        *play () : ExecutionStream {
-            while (this.$index < this.$words.length) {
-                let word = this.$words[ this.$index++ ] as RuntimeWord;
-
-                if (word.type == 'NATIVE') {
-                    yield word;
-                }
-                else {
-                    yield* word.body.play();
-                }
-
-                if (this.$invoke) {
-                    let dyn = this.$invoke;
-                    this.$invoke = undefined;
-                    if (dyn.type == 'NATIVE') {
-                        yield dyn;
-                    }
-                    else {
-                        yield* dyn.body.play();
-                    }
-                }
-            }
-            this.$index = 0;
-        }
-    }
 
 }
