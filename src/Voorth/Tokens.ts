@@ -30,7 +30,11 @@ export namespace Tokens {
         return isNumberToken(t) || isStringToken(t) || isBooleanToken(t)
     }
 
-    export function createJumpToken( o : number, c : boolean = false) : JumpToken {
+    export function createNumberToken  (v : string) : NumberToken  { return { type : 'NUMBER',  value : v } as NumberToken  }
+    export function createStringToken  (v : string) : StringToken  { return { type : 'STRING',  value : v } as StringToken  }
+    export function createBooleanToken (v : string) : BooleanToken { return { type : 'BOOLEAN', value : v } as BooleanToken }
+    export function createWordToken    (v : string) : WordToken    { return { type : 'WORD',    value : v } as WordToken    }
+    export function createJumpToken ( o : number, c : boolean = false) : JumpToken {
         return { type : 'JUMP', offset: o, conditional : c } as JumpToken
     }
 

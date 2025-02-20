@@ -171,35 +171,33 @@ export class Compiler {
                 // -------------------------------------------------------------
                 // DO LOOP
                 // -------------------------------------------------------------
-                //else if (t.value == 'DO') {
-                //    let addr = Tokens.createJumpToken( index += 2, true );
-                //    jumps.push(addr);
-                //    index += 3;
-                //    yield Tokens.createWordToken("SWAP");
-                //    yield Tokens.createWordToken(">R");
-                //    yield Tokens.createNumToken(1);       // loop returns here
-                //    yield Tokens.createWordToken("+");
-                //    yield Tokens.createWordToken(">R");
-                //}
-                //else if (t.value == 'LOOP') {
-                //    let addr = jumps.pop() as Tokens.Token;
-                //    Tokens.assertJumpToken(addr);
-                //    index += 5;
-                //    addr.value = addr.value - index;
-                //    index += 2;
-                //    yield Tokens.createWordToken("<R");
-                //    yield Tokens.createWordToken("DUP");
-                //    yield Tokens.createWordToken("@R");
-                //    yield Tokens.createWordToken(">=");
-                //    yield addr;
-                //    yield Tokens.createWordToken("DROP");
-                //    yield Tokens.createWordToken("^R");
-                //}
+                else if (t.value == 'DO') {
+                    let jump = Tokens.createJumpToken( index += 2, true );
+                    jumps.push(jump);
+                    index += 3;
+                    yield Tokens.createWordToken("SWAP");
+                    yield Tokens.createWordToken(">R!");
+                    yield Tokens.createNumberToken("1");   // loop returns here
+                    yield Tokens.createWordToken("+");
+                    yield Tokens.createWordToken(">R!");
+                }
+                else if (t.value == 'LOOP') {
+                    let jump = jumps.pop() as Tokens.JumpToken;
+                    index += 5;
+                    jump.offset = jump.offset - index;
+                    index += 2;
+                    yield Tokens.createWordToken("<R!");
+                    yield Tokens.createWordToken("DUP");
+                    yield Tokens.createWordToken(".R!");
+                    yield Tokens.createWordToken(">=");
+                    yield jump;
+                    yield Tokens.createWordToken("DROP");
+                    yield Tokens.createWordToken("^R!");
+                }
                 else {
                     index++;
                     yield t;
                 }
-
             }
             else {
                 index++;

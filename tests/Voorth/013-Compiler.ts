@@ -5,7 +5,7 @@ import * as Voorth from '../../src/Voorth'
 
 const test = new Test.Simple();
 
-function Test012a () {
+function Test013a () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
 
@@ -33,7 +33,7 @@ function Test012a () {
     }
 }
 
-function Test012b () {
+function Test013b () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
 
@@ -63,7 +63,7 @@ function Test012b () {
     }
 }
 
-Test012a();
-Test012b();
+Test013a();
+Test013b();
 test.done();
 
