@@ -27,8 +27,8 @@ function Test003 () {
     dict.bind(w1);
     dict.bind(w2);
 
-    test.ok(dict.lookup('HELLO') === w1, '... fetched the right word');
-    test.ok(dict.lookup('WORLD') === w2, '... fetched the right word');
+    test.ok(dict.lookup(new Voorth.Literals.WordRef('HELLO')) === w1, '... fetched the right word');
+    test.ok(dict.lookup(new Voorth.Literals.WordRef('WORLD')) === w2, '... fetched the right word');
 
     test.done();
 }
