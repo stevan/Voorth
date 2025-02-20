@@ -16,7 +16,7 @@ export namespace Words {
     export type RuntimeWord  = UserWord | NativeWord;
     export type Word         = UserWord | NativeWord | CompilerWord;
 
-    export type CompiledStream  = Generator<RuntimeWord, void, void>;
+    export type CompiledStream = Generator<RuntimeWord, void, void>;
 
     // -------------------------------------------------------------------------
 

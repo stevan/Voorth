@@ -53,7 +53,7 @@ function Test001 () {
         'BOOLEAN', 'BOOLEAN',
     ];
 
-    for (const got of Voorth.Tokens.tokenize(source)) {
+    for (const got of Voorth.Tokens.tokenize(source, true)) {
         let exp : string = 'WORD';
         if (expected.length) {
             exp = expected.shift() as string;

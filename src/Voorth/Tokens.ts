@@ -35,13 +35,15 @@ export namespace Tokens {
 
     const SPLITTER = /\/\/\s.*\n|"([^"])*"|'([^'])*'|\S+/g;
 
-    export function* tokenize (src : string) : TokenStream {
+    export function* tokenize (src : string, includeComments : boolean = false) : TokenStream {
         let match;
         while ((match = SPLITTER.exec(src)) !== null) {
             let m = match[0] as string;
             switch (true) {
             case IS_COMMENT.test(m):
-                yield { type: 'COMMENT', value : m }
+                if (includeComments) {
+                    yield { type: 'COMMENT', value : m }
+                }
                 break;
             case IS_STRING.test(m):
                 yield { type: 'STRING', value : m }

@@ -58,6 +58,10 @@ export namespace ExecTokens {
             this.$tokens.push(...source);
         }
 
+        loadStream (source : ExecStream) {
+            this.$tokens.push(...source);
+        }
+
         jump (offset : number) : void {
             this.$index += offset;
         }
