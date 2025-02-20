@@ -5,6 +5,7 @@ export namespace Tokens {
     export type StringToken  = { type : 'STRING',  value : string }
     export type BooleanToken = { type : 'BOOLEAN', value : string }
     export type WordToken    = { type : 'WORD',    value : string }
+    export type JumpToken    = { type : 'JUMP',    offset : number, conditional : boolean }
     export type CommentToken = { type : 'COMMENT', value : string }
 
     export type Token =
@@ -12,6 +13,7 @@ export namespace Tokens {
         | StringToken
         | BooleanToken
         | WordToken
+        | JumpToken
         | CommentToken
 
     export type LiteralToken = NumberToken | StringToken | BooleanToken
@@ -22,9 +24,14 @@ export namespace Tokens {
     export function isStringToken  (t : Token) : t is StringToken  { return t.type == 'STRING'  }
     export function isBooleanToken (t : Token) : t is BooleanToken { return t.type == 'BOOLEAN' }
     export function isWordToken    (t : Token) : t is WordToken    { return t.type == 'WORD'    }
+    export function isJumpToken    (t : Token) : t is JumpToken    { return t.type == 'JUMP'    }
     export function isCommentToken (t : Token) : t is CommentToken { return t.type == 'COMMENT' }
     export function isLiteralToken (t : Token) : t is LiteralToken {
         return isNumberToken(t) || isStringToken(t) || isBooleanToken(t)
+    }
+
+    export function createJumpToken( o : number, c : boolean = false) : JumpToken {
+        return { type : 'JUMP', offset: o, conditional : c } as JumpToken
     }
 
     const IS_NUMBER   = /^-?[0-9][0-9_]*$/;

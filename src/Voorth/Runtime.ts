@@ -46,13 +46,14 @@ export class Runtime {
                 this.call(wordRef);
                 break;
             case ExecTokens.isMoveToken(xt):
-                if (xt.conditional) {
+                let jump = xt.jumpToken;
+                if (jump.conditional) {
                     let cond = this.stack.pop() as Literals.Literal;
-                    if (cond.toBool())
-                        tape.jump(xt.offset);
+                    if (!cond.toBool())
+                        tape.jump(jump.offset);
                 }
                 else {
-                    tape.jump(xt.offset);
+                    tape.jump(jump.offset);
                 }
                 break;
             case ExecTokens.isWaitToken(xt):
@@ -91,13 +92,27 @@ export class Runtime {
         loadWord('ROT',  (r) => this.stack.rot());
 
         // ---------------------------------------------------------------------
+        // Contorl Stack Ops
+        // ---------------------------------------------------------------------
+        // >R!  ( a --   ) ( a --   )   take from stack and push onto control stack
+        // <R!  (   -- a ) (   -- a )   take from control stack and push onto stack
+        // .R!  (   -- a ) ( a -- a )   push top of control stack onto stack
+        // ^R!  (   --   ) (   --   )   drop the top of the control stack
+        // ---------------------------------------------------------------------
+
+        loadWord('>R!', (r) => this.control.push(this.stack.pop()));
+        loadWord('<R!', (r) => this.stack.push(this.control.pop()));
+        loadWord('.R!', (r) => this.stack.push(this.control.peek()));
+        loadWord('^R!', (r) => this.control.drop());
+
+        // ---------------------------------------------------------------------
         // Strings
         // ---------------------------------------------------------------------
 
         loadWord('~', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
-            this.stack.push(new Literals.Str(lhs.toStr() + rhs.toStr()))
+            this.stack.push(new Literals.Str(lhs.toNative() + rhs.toNative()))
         });
 
         // ---------------------------------------------------------------------

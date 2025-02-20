@@ -6,8 +6,8 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test010a () {
-    let compiler = new Voorth.Compiler();
     let runtime  = new Voorth.Runtime();
+    let compiler = new Voorth.Compiler(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10
@@ -18,12 +18,12 @@ function Test010a () {
     //console.log(runtime.stack)
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
-    test.is(result.value, 10, '... got the expected result (const only)');
+    test.is(result.toNative(), 10, '... got the expected result (const only)');
 }
 
 function Test010b () {
-    let compiler = new Voorth.Compiler();
     let runtime  = new Voorth.Runtime();
+    let compiler = new Voorth.Compiler(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 +
@@ -34,12 +34,12 @@ function Test010b () {
     //console.log(runtime.stack)
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
-    test.is(result.value, 11, '... got the expected result (addition)');
+    test.is(result.toNative(), 11, '... got the expected result (addition)');
 }
 
 function Test010c () {
-    let compiler = new Voorth.Compiler();
     let runtime  = new Voorth.Runtime();
+    let compiler = new Voorth.Compiler(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 +
@@ -50,12 +50,12 @@ function Test010c () {
     //console.log(runtime.stack)
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
-    test.is(result.value, 31, '... got the expected result (multiple additions)');
+    test.is(result.toNative(), 31, '... got the expected result (multiple additions)');
 }
 
 function Test010d () {
-    let compiler = new Voorth.Compiler();
     let runtime  = new Voorth.Runtime();
+    let compiler = new Voorth.Compiler(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 &+ INVOKE!
@@ -66,7 +66,7 @@ function Test010d () {
     //console.log(runtime.stack)
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
-    test.is(result.value, 31, '... got the expected result (addition with INVOKE!)');
+    test.is(result.toNative(), 31, '... got the expected result (addition with INVOKE!)');
 }
 
 Test010a();

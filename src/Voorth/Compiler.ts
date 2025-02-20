@@ -8,6 +8,8 @@ import { Words }      from './Words';
 
 export class Compiler {
 
+    constructor(public runtime : Runtime) {}
+
     compile (tokens : Tokens.TokenStream) : ExecTokens.Tape {
         return this.loadTape(
             this.compileControlStructures(
@@ -18,7 +20,34 @@ export class Compiler {
         );
     }
 
-    compileWord (tokens : Tokens.TokenStream) : void {}
+    compileWord (tokens : Tokens.TokenStream) : void {
+        let name = this.extractName(tokens);
+        //console.log("BEGIN WORD: ", name);
+        let tape = this.loadTape(this.compileControlStructures(this.extractWordBody(tokens)));
+        //console.log("END WORD: ", name);
+        this.runtime.dict.bind(Words.createUserWord(name, tape));
+    }
+
+    private extractName (tokens : Tokens.TokenStream) : string {
+        let next = tokens.next();
+        if (next.done)
+            throw new Error(`Unexpected end of token stream, expected word name`);
+        let token = next.value;
+        if (!Tokens.isWordToken(token))
+            throw new Error(`Expected WordToken, got (${JSON.stringify(token)})`);
+        return token.value as string;
+    }
+
+    private *extractWordBody (tokens : Tokens.TokenStream) : Tokens.TokenStream {
+        let next = tokens.next();
+        while (!next.done) {
+            let token = next.value;
+            if (Tokens.isWordToken(token) && token.value == ';') return;
+            yield token;
+            next = tokens.next();
+        }
+        throw new Error(`Reached end of token stream without encountering word end (;)`);
+    }
 
     private loadTape (tokens : Tokens.TokenStream) : ExecTokens.Tape {
         let tape = new ExecTokens.Tape();
@@ -34,7 +63,7 @@ export class Compiler {
                     yield ExecTokens.createConstToken(new Literals.Num(parseInt(token.value)))
                     break;
                 case Tokens.isStringToken(token):
-                    yield ExecTokens.createConstToken(new Literals.Str(token.value))
+                    yield ExecTokens.createConstToken(new Literals.Str(token.value.slice(1,-1)))
                     break;
                 case Tokens.isBooleanToken(token):
                     yield ExecTokens.createConstToken(new Literals.Bool(token.value == '#t'))
@@ -52,12 +81,12 @@ export class Compiler {
                 case (name == "INVOKE!"):
                     yield ExecTokens.createInvokeToken()
                     break;
-                case /^BRANCH[!?]$/.test(name):
-                    console.log("TODO");
-                    break;
                 default:
                     yield ExecTokens.createCallToken(new Literals.WordRef(name))
                 }
+            }
+            else if (Tokens.isJumpToken(token)) {
+                yield ExecTokens.createMoveToken(token)
             }
             else {
                 throw new Error(`Unrecognized (??) token (${JSON.stringify(token)})`);
@@ -81,99 +110,91 @@ export class Compiler {
 
     private *compileControlStructures (tokens : Tokens.TokenStream) : Tokens.TokenStream {
         let index : number = 0;
+        let jumps : Tokens.JumpToken[] = [];
         for (const t of tokens) {
-            index++;
-            yield t;
-            /*
             if (Tokens.isWordToken(t)) {
                 // -------------------------------------------------------------
                 // Conditionals
                 // -------------------------------------------------------------
                 if (t.value == 'IF') {
-                    let addr = Tokens.createJumpToken( index += 1, true );
-                    addrs.push(addr)
-                    yield addr;
+                    let jump = Tokens.createJumpToken( index += 1, true );
+                    jumps.push(jump);
+                    yield jump;
                 }
                 else if (t.value == 'ELSE') {
-                    let addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(addr);
+                    let jump = jumps.pop() as Tokens.JumpToken;
                     index += 1
-                    addr.value = index - addr.value;
+                    jump.offset = index - jump.offset;
 
-                    let next_addr = Tokens.createJumpToken( index, false );
-                    addrs.push(next_addr)
-                    yield next_addr;
+                    let next_jump = Tokens.createJumpToken( index, false );
+                    jumps.push(next_jump)
+                    yield next_jump;
                 }
                 else if (t.value == 'THEN') {
-                    let addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(addr);
-                    addr.value = index - addr.value;
+                    let jump = jumps.pop() as Tokens.JumpToken;
+                    jump.offset = index - jump.offset;
                     continue;
                 }
                 // -------------------------------------------------------------
                 // BEGIN UNTIL
                 // -------------------------------------------------------------
                 else if (t.value == 'BEGIN') {
-                    let addr = Tokens.createJumpToken( index, true );
-                    addrs.push(addr);
+                    let jump = Tokens.createJumpToken( index, true );
+                    jumps.push(jump);
                     continue;
                 }
                 else if (t.value == 'UNTIL') {
-                    let addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(addr);
+                    let jump = jumps.pop() as Tokens.JumpToken;
                     index += 1;
-                    addr.value = addr.value - index;
-                    yield addr;
+                    jump.offset = jump.offset - index;
+                    yield jump;
                 }
                 else if (t.value == 'WHILE') {
-                    let addr = Tokens.createJumpToken( index, true );
-                    addrs.push(addr);
+                    let jump = Tokens.createJumpToken( index, true );
+                    jumps.push(jump);
                     index += 1;
-                    yield addr;
+                    yield jump;
                 }
                 else if (t.value == 'REPEAT') {
                     index += 1;
 
-                    let while_addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(while_addr);
+                    let while_jump  = jumps.pop() as Tokens.JumpToken;
+                    let repeat_jump = jumps.pop() as Tokens.JumpToken;
 
-                    let repeat_addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(repeat_addr);
+                    repeat_jump.offset      = repeat_jump.offset - index;
+                    repeat_jump.conditional = false;
 
-                    repeat_addr.value = repeat_addr.value - index;
-                    repeat_addr.isConditional = false;
+                    while_jump.offset = index - repeat_jump.offset;
 
-                    while_addr.value = index - repeat_addr.value;
-
-                    yield repeat_addr;
+                    yield repeat_jump;
                 }
                 // -------------------------------------------------------------
                 // DO LOOP
                 // -------------------------------------------------------------
-                else if (t.value == 'DO') {
-                    let addr = Tokens.createJumpToken( index += 2, true );
-                    addrs.push(addr);
-                    index += 3;
-                    yield Tokens.createWordToken("SWAP");
-                    yield Tokens.createWordToken(">R");
-                    yield Tokens.createNumToken(1);       // loop returns here
-                    yield Tokens.createWordToken("+");
-                    yield Tokens.createWordToken(">R");
-                }
-                else if (t.value == 'LOOP') {
-                    let addr = addrs.pop() as Tokens.Token;
-                    Tokens.assertJumpToken(addr);
-                    index += 5;
-                    addr.value = addr.value - index;
-                    index += 2;
-                    yield Tokens.createWordToken("<R");
-                    yield Tokens.createWordToken("DUP");
-                    yield Tokens.createWordToken("@R");
-                    yield Tokens.createWordToken(">=");
-                    yield addr;
-                    yield Tokens.createWordToken("DROP");
-                    yield Tokens.createWordToken("^R");
-                }
+                //else if (t.value == 'DO') {
+                //    let addr = Tokens.createJumpToken( index += 2, true );
+                //    jumps.push(addr);
+                //    index += 3;
+                //    yield Tokens.createWordToken("SWAP");
+                //    yield Tokens.createWordToken(">R");
+                //    yield Tokens.createNumToken(1);       // loop returns here
+                //    yield Tokens.createWordToken("+");
+                //    yield Tokens.createWordToken(">R");
+                //}
+                //else if (t.value == 'LOOP') {
+                //    let addr = jumps.pop() as Tokens.Token;
+                //    Tokens.assertJumpToken(addr);
+                //    index += 5;
+                //    addr.value = addr.value - index;
+                //    index += 2;
+                //    yield Tokens.createWordToken("<R");
+                //    yield Tokens.createWordToken("DUP");
+                //    yield Tokens.createWordToken("@R");
+                //    yield Tokens.createWordToken(">=");
+                //    yield addr;
+                //    yield Tokens.createWordToken("DROP");
+                //    yield Tokens.createWordToken("^R");
+                //}
                 else {
                     index++;
                     yield t;
@@ -184,7 +205,6 @@ export class Compiler {
                 index++;
                 yield t;
             }
-            */
         }
     }
 

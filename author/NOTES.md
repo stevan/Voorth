@@ -41,6 +41,11 @@ Tuples are of a fixed size, and are not indexable
 *Stack* $n [<_]     pop $n items from Stack push them onto the stack
 *Stack* $n [^_]     drop $n items from Stack (does not affect the stack)
 *Stack* $n [._]     peek $n items from Stack and push them onto the stack
+
+dup   [+_]
+over  [_+]
+swap  [%_]
+rot   [@_]
 ```
 
 ### Queues

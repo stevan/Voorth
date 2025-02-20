@@ -90,7 +90,7 @@ export namespace Literals {
         toNum    () : number  { throw new Error("TODO") }
         toBool   () : boolean { throw new Error("TODO") }
         toStr    () : string  { throw new Error("TODO") }
-        toNative () : any { return this.toStr() }
+        toNative () : any { return this.$items.map((l) => l.toNative()) }
 
         get (i : number) : Literal { return this.$items[i] as Literal }
         set (i : number, l : Literal) : void { this.$items[i] = l }
@@ -111,7 +111,7 @@ export namespace Literals {
         toNum    () : number  { throw new Error("TODO") }
         toBool   () : boolean { throw new Error("TODO") }
         toStr    () : string  { throw new Error("TODO") }
-        toNative () : any { return this.toStr() }
+        toNative () : any { return this.$items.map((l) => l.toNative()) }
 
         get size () : number { return this.$items.length }
 
@@ -153,7 +153,7 @@ export namespace Literals {
         toNum    () : number  { throw new Error("TODO") }
         toBool   () : boolean { throw new Error("TODO") }
         toStr    () : string  { throw new Error("TODO") }
-        toNative () : any { return this.toStr() }
+        toNative () : any { return this.$items.map((l) => l.toNative()) }
 
         get size () : number { return this.$items.length }
 

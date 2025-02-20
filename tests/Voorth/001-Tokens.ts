@@ -58,7 +58,7 @@ function Test001 () {
         if (expected.length) {
             exp = expected.shift() as string;
         }
-        test.is(got.type as string, exp, `(${got.value.trim()}) matches (${exp}) ... got(${got.type})`);
+        test.is(got.type as string, exp, `(${JSON.stringify(got)}) matches (${exp}) ... got(${got.type})`);
     }
 
     test.done();

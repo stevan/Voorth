@@ -1,11 +1,12 @@
 
 import { Literals } from './Literals';
+import { Tokens }   from './Tokens';
 
 export namespace ExecTokens {
 
-    export type ConstToken  = { type : 'CONST', literal : Literals.Literal }
-    export type CallToken   = { type : 'CALL',  wordRef : Literals.WordRef }
-    export type MoveToken   = { type : 'MOVE',  offset  : number, conditional : boolean }
+    export type ConstToken  = { type : 'CONST', literal   : Literals.Literal }
+    export type CallToken   = { type : 'CALL',  wordRef   : Literals.WordRef }
+    export type MoveToken   = { type : 'MOVE',  jumpToken : Tokens.JumpToken }
     export type InvokeToken = { type : 'INVOKE' }
     export type WaitToken   = { type : 'WAIT'   }
     export type ExitToken   = { type : 'EXIT'   }
@@ -35,8 +36,8 @@ export namespace ExecTokens {
         return { type : 'CALL', wordRef : w } as CallToken
     }
 
-    export function createMoveToken (o : number, cond : boolean = false) : MoveToken {
-        return { type : 'MOVE', offset : o, conditional : cond } as MoveToken
+    export function createMoveToken (j : Tokens.JumpToken) : MoveToken {
+        return { type : 'MOVE', jumpToken : j } as MoveToken
     }
 
     export function createInvokeToken () : InvokeToken { return { type : 'INVOKE' } as InvokeToken }

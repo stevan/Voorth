@@ -14,16 +14,17 @@ function Test006a () {
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(1)),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('-')),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('DUP')),
-        Voorth.ExecTokens.createMoveToken(-4, true),
-        Voorth.ExecTokens.createConstToken(new Voorth.Literals.Str("SURPRISE!")),
+        Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(0)),
+        Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('<=')),
+        Voorth.ExecTokens.createMoveToken(Voorth.Tokens.createJumpToken(-6, true)),
     ]);
 
     runtime.run(tape);
 
     //console.log(runtime.stack)
 
-    let result : Voorth.Literals.Str = runtime.stack.pop() as Voorth.Literals.Str;
-    test.is(result.value, "SURPRISE!", '... got the expected result');
+    let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
+    test.is(result.value, 0, '... got the expected result');
 }
 
 
