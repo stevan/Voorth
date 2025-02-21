@@ -17,82 +17,65 @@ export namespace Executors {
         }
 
         execute (tape : Tape) : void {
-            for (const r of this.thread(tape)) {
-                r(this.runtime);
-                //console.log("STACK", this.runtime.stack);
-                //console.log("CONTROL", this.runtime.control);
-            }
-        }
-
-        *thread (tape : Tape) : RunnableStream {
-             for (const xt of tape.play()) {
+            for (const xt of tape.play()) {
                 //console.log("THREADING", xt);
-                switch (true) {
-                // -----------------------------------------------------------------
-                // Constants
-                // -----------------------------------------------------------------
-                case ExecTokens.isConstToken(xt):
-                    yield (r) => { r.stack.push(xt.literal) }
-                    break;
+                if (ExecTokens.isConstToken(xt)) {
+                    this.runtime.stack.push(xt.literal);
+                }
 
                 // -----------------------------------------------------------------
                 // Calls
                 // -----------------------------------------------------------------
-                case ExecTokens.isCallToken(xt):
+                else if (ExecTokens.isCallToken(xt)) {
                     let word = this.runtime.dict.lookup(xt.wordRef);
                     if (!word) throw new Error(`Unable to find word(${xt.wordRef.name})`);
 
                     if (Words.isNativeWord(word)) {
-                        yield (r) => { word.body(r) };
+                        word.body(this.runtime);
                     }
                     else {
-                        yield* this.thread(word.body);
+                        this.execute(word.body);
                     }
-                    break;
-                case ExecTokens.isInvokeToken(xt):
-                    yield (r) => {
-                        //console.log(r);
-                        let wordRef = r.control.pop() as Literals.WordRef;
-                        let word    = r.dict.lookup(wordRef);
-                        if (!word)
-                            throw new Error(`Unable to find word(${wordRef.name})`);
-                        if (Words.isNativeWord(word)) {
-                            word.body(r);
-                        }
-                        else {
-                            tape.invoke(word.body);
-                        }
+                }
+                else if (ExecTokens.isInvokeToken(xt)) {
+                    let wordRef = this.runtime.control.pop() as Literals.WordRef;
+                    let word    = this.runtime.dict.lookup(wordRef);
+                    if (!word)
+                        throw new Error(`Unable to find word(${wordRef.name})`);
+                    if (Words.isNativeWord(word)) {
+                        word.body(this.runtime);
                     }
-                    break;
+                    else {
+                        this.execute(word.body);
+                    }
+                }
 
                 // -----------------------------------------------------------------
                 // Jumps
                 // -----------------------------------------------------------------
-                case ExecTokens.isMoveToken(xt):
+                else if (ExecTokens.isMoveToken(xt)) {
                     let jump = xt.jumpToken;
                     if (jump.conditional) {
-                        yield (r) => {
-                            let cond = r.stack.pop() as Literals.Literal;
-                            if (!cond.toBool())
-                                tape.jump(jump.offset);
-                        }
+                        let cond = this.runtime.stack.pop() as Literals.Literal;
+                        if (!cond.toBool())
+                            tape.jump(jump.offset);
                     }
                     else {
-                        yield (r) => { tape.jump(jump.offset) }
+                        tape.jump(jump.offset);
                     }
-                    break;
+                }
 
                 // -----------------------------------------------------------------
                 // Specials
                 // -----------------------------------------------------------------
-                case ExecTokens.isWaitToken(xt):
-                    yield (r) => { console.log('Wait!'); }
-                    break;
-                case ExecTokens.isExitToken(xt):
-                    yield (r) => { console.log('Goodbye!'); }
-                    return;
+                else if (ExecTokens.isWaitToken(xt)) {
+                    console.log('Wait!');
+                }
+                else if (ExecTokens.isExitToken(xt)) {
+                    console.log('Goodbye!');
+                }
                 // -----------------------------------------------------------------
-                default:
+                else {
                     throw new Error("Unrecognized Token" + xt);
                 }
             }
