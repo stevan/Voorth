@@ -8,12 +8,13 @@ const test = new Test.Simple();
 function Test010a () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.stack)
 
@@ -24,12 +25,13 @@ function Test010a () {
 function Test010b () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 +
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.stack)
 
@@ -40,12 +42,13 @@ function Test010b () {
 function Test010c () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 +
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.stack)
 
@@ -56,12 +59,13 @@ function Test010c () {
 function Test010d () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 &+ INVOKE!
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.stack)
 

@@ -8,6 +8,7 @@ const test = new Test.Simple();
 function Test011a () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         : greet "Hello World" ;
@@ -15,7 +16,7 @@ function Test011a () {
         greet
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -27,6 +28,7 @@ function Test011a () {
 function Test011b () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         : greet "Hello " SWAP ~ ;
@@ -34,7 +36,7 @@ function Test011b () {
         "World" greet
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

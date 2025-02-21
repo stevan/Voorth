@@ -5,27 +5,23 @@ import * as Voorth from '../../src/Voorth'
 
 const test = new Test.Simple();
 
-function Test014a () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+function Test020a () {
+    let i = new Voorth.Interpreter();
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    i.run(`
         : countdown
             DUP 0 DO
                 DUP 1 -
             LOOP ;
 
         5 countdown
-    `));
-
-    executor.execute(tape);
+    `);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
 
     // results are in reverse order ...
-    let results = runtime.stack.toNative().reverse();
+    let results = i.runtime.stack.toNative().reverse();
 
     let x = 0;
     while (x <= 5) {
@@ -33,5 +29,5 @@ function Test014a () {
     }
 }
 
-Test014a();
+Test020a();
 test.done();

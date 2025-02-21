@@ -111,7 +111,9 @@ export namespace Literals {
         toNum    () : number  { throw new Error("TODO") }
         toBool   () : boolean { throw new Error("TODO") }
         toStr    () : string  { throw new Error("TODO") }
+
         toNative () : any { return this.$items.map((l) => l.toNative()) }
+        toArray  () : Literal[] { return this.$items }
 
         get size () : number { return this.$items.length }
 

@@ -8,6 +8,7 @@ const test = new Test.Simple();
 function Test013a () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         : countdown
@@ -19,7 +20,7 @@ function Test013a () {
         5 countdown
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -36,6 +37,7 @@ function Test013a () {
 function Test013b () {
     let runtime  = new Voorth.Runtime();
     let compiler = new Voorth.Compiler(runtime);
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
         : countup
@@ -49,7 +51,7 @@ function Test013b () {
         5 countup
     `));
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

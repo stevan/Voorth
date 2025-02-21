@@ -6,7 +6,8 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test005a () {
-    let runtime = new Voorth.Runtime();
+    let runtime  = new Voorth.Runtime();
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = new Voorth.ExecTokens.Tape();
     tape.load([
@@ -17,14 +18,15 @@ function Test005a () {
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
     test.is(result.value, 35, '... got the expected result (simple)');
 }
 
 function Test005b () {
-    let runtime = new Voorth.Runtime();
+    let runtime  = new Voorth.Runtime();
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let addTen = new Voorth.ExecTokens.Tape();
     addTen.load([
@@ -42,14 +44,15 @@ function Test005b () {
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
     test.is(result.value, 35, '... got the expected result (calling user word)');
 }
 
 function Test005c () {
-    let runtime = new Voorth.Runtime();
+    let runtime  = new Voorth.Runtime();
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let addTen = new Voorth.ExecTokens.Tape();
     addTen.load([
@@ -68,7 +71,7 @@ function Test005c () {
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     let result : Voorth.Literals.Num = runtime.stack.pop() as Voorth.Literals.Num;
     test.is(result.value, 65, '... got the expected result (invoking ref to user word) ');

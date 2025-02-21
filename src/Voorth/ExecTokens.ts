@@ -47,11 +47,14 @@ export namespace ExecTokens {
     export class Tape {
         private $index   : number;
         private $tokens  : ExecToken[];
+        private $invoke? : Tape;
 
         constructor (tokens? : ExecToken[]) {
             this.$index  = 0;
             this.$tokens = tokens ? tokens : new Array<ExecToken>();
         }
+
+        invoke (tape : Tape) : void { this.$invoke = tape }
 
         length () : number { return this.$tokens.length }
 
@@ -69,8 +72,14 @@ export namespace ExecTokens {
 
         *play () : ExecStream {
             while (this.$index < this.$tokens.length) {
-                let token = this.$tokens[ this.$index++ ] as ExecToken;
-                yield token;
+                let xt = this.$tokens[ this.$index++ ] as ExecToken;
+                yield xt;
+
+                if (this.$invoke) {
+                    let invoked = this.$invoke;
+                    this.$invoke = undefined;
+                    yield* invoked.play();
+                }
             }
             this.$index = 0;
         }

@@ -6,7 +6,8 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test006a () {
-    let runtime = new Voorth.Runtime();
+    let runtime  = new Voorth.Runtime();
+    let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = new Voorth.ExecTokens.Tape();
     tape.load([
@@ -19,7 +20,7 @@ function Test006a () {
         Voorth.ExecTokens.createMoveToken(Voorth.Tokens.createJumpToken(-6, true)),
     ]);
 
-    runtime.run(tape);
+    executor.execute(tape);
 
     //console.log(runtime.stack)
 
