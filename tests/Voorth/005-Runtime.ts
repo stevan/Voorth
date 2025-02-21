@@ -66,6 +66,7 @@ function Test005c () {
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(50)),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.WordRef('add10')),
+        Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('>R!')),
         Voorth.ExecTokens.createInvokeToken(),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(5)),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),

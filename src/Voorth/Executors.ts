@@ -19,6 +19,8 @@ export namespace Executors {
         execute (tape : ExecTokens.Tape) : void {
             for (const r of this.thread(tape)) {
                 r(this.runtime);
+                //console.log("STACK", this.runtime.stack);
+                //console.log("CONTROL", this.runtime.control);
             }
         }
 
@@ -49,7 +51,8 @@ export namespace Executors {
                     break;
                 case ExecTokens.isInvokeToken(xt):
                     yield (r) => {
-                        let wordRef = r.stack.pop() as Literals.WordRef;
+                        //console.log(r);
+                        let wordRef = r.control.pop() as Literals.WordRef;
                         let word    = r.dict.lookup(wordRef);
                         if (!word)
                             throw new Error(`Unable to find word(${wordRef.name})`);

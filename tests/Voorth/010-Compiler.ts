@@ -62,7 +62,7 @@ function Test010d () {
     let executor = new Voorth.Executors.Executor(runtime);
 
     let tape = compiler.compile(Voorth.Tokens.tokenize(`
-        10 1 + 20 &+ INVOKE!
+        10 1 + 20 &+ >R! INVOKE!
     `));
 
     executor.execute(tape);
