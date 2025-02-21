@@ -3,7 +3,6 @@ import { Literals } from './Literals';
 import { Tokens }   from './Tokens';
 
 export namespace ExecTokens {
-
     export type ConstToken  = { type : 'CONST', literal   : Literals.Literal }
     export type CallToken   = { type : 'CALL',  wordRef   : Literals.WordRef }
     export type MoveToken   = { type : 'MOVE',  jumpToken : Tokens.JumpToken }
@@ -43,45 +42,4 @@ export namespace ExecTokens {
     export function createInvokeToken () : InvokeToken { return { type : 'INVOKE' } as InvokeToken }
     export function createWaitToken   () : WaitToken   { return { type : 'WAIT'   } as WaitToken   }
     export function createExitToken   () : ExitToken   { return { type : 'EXIT'   } as ExitToken   }
-
-    export class Tape {
-        private $index   : number;
-        private $tokens  : ExecToken[];
-        private $invoke? : Tape;
-
-        constructor (tokens? : ExecToken[]) {
-            this.$index  = 0;
-            this.$tokens = tokens ? tokens : new Array<ExecToken>();
-        }
-
-        invoke (tape : Tape) : void { this.$invoke = tape }
-
-        length () : number { return this.$tokens.length }
-
-        load (source : ExecToken[]) {
-            this.$tokens.push(...source);
-        }
-
-        loadStream (source : ExecStream) {
-            this.$tokens.push(...source);
-        }
-
-        jump (offset : number) : void {
-            this.$index += offset;
-        }
-
-        *play () : ExecStream {
-            while (this.$index < this.$tokens.length) {
-                let xt = this.$tokens[ this.$index++ ] as ExecToken;
-                yield xt;
-
-                if (this.$invoke) {
-                    let invoked = this.$invoke;
-                    this.$invoke = undefined;
-                    yield* invoked.play();
-                }
-            }
-            this.$index = 0;
-        }
-    }
 }

@@ -2,7 +2,7 @@
 import { Words }      from './Words';
 import { Literals }   from './Literals';
 import { ExecTokens } from './ExecTokens';
-import { Runtime }    from './Runtime';
+import { Runtime, Tape }    from './Runtime';
 
 export namespace Executors {
 
@@ -16,7 +16,7 @@ export namespace Executors {
             this.runtime = r;
         }
 
-        execute (tape : ExecTokens.Tape) : void {
+        execute (tape : Tape) : void {
             for (const r of this.thread(tape)) {
                 r(this.runtime);
                 //console.log("STACK", this.runtime.stack);
@@ -24,7 +24,7 @@ export namespace Executors {
             }
         }
 
-        *thread (tape : ExecTokens.Tape) : RunnableStream {
+        *thread (tape : Tape) : RunnableStream {
              for (const xt of tape.play()) {
                 //console.log("THREADING", xt);
                 switch (true) {

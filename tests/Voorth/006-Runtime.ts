@@ -9,7 +9,7 @@ function Test006a () {
     let runtime  = new Voorth.Runtime();
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = new Voorth.ExecTokens.Tape();
+    let tape = new Voorth.Tape();
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(10)),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(1)),

@@ -10,8 +10,8 @@ export class Compiler {
 
     constructor(public runtime : Runtime) {}
 
-    compile (tokens : Tokens.TokenStream) : ExecTokens.Tape {
-        return this.loadTape(
+    compile (tokens : Tokens.TokenStream) : ExecTokens.ExecStream {
+        return this.compileStream(
             this.compileControlStructures(
                 this.compileWordDefinitions(
                     tokens
@@ -23,9 +23,9 @@ export class Compiler {
     compileWord (tokens : Tokens.TokenStream) : void {
         let name = this.extractName(tokens);
         //console.log("BEGIN WORD: ", name);
-        let tape = this.loadTape(this.compileControlStructures(this.extractWordBody(tokens)));
+        let exec = this.compileStream(this.compileControlStructures(this.extractWordBody(tokens)));
         //console.log("END WORD: ", name);
-        this.runtime.bindWord(Words.createUserWord(name, tape));
+        this.runtime.bindUserWord(name, exec);
     }
 
     private extractName (tokens : Tokens.TokenStream) : string {
@@ -47,12 +47,6 @@ export class Compiler {
             next = tokens.next();
         }
         throw new Error(`Reached end of token stream without encountering word end (;)`);
-    }
-
-    private loadTape (tokens : Tokens.TokenStream) : ExecTokens.Tape {
-        let tape = new ExecTokens.Tape();
-        tape.loadStream(this.compileStream(tokens));
-        return tape;
     }
 
     private *compileStream (tokens : Tokens.TokenStream) : ExecTokens.ExecStream {

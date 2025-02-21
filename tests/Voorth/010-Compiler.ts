@@ -10,11 +10,11 @@ function Test010a () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.stack)
 
@@ -27,11 +27,11 @@ function Test010b () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 +
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.stack)
 
@@ -44,11 +44,11 @@ function Test010c () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 +
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.stack)
 
@@ -61,11 +61,11 @@ function Test010d () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 &+ >R! INVOKE!
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.stack)
 

@@ -6,7 +6,7 @@ import * as Voorth from '../../src/Voorth'
 function Test004 () {
     let test = new Test.Simple();
 
-    let tape = new Voorth.ExecTokens.Tape();
+    let tape = new Voorth.Tape();
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(10)),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(20)),

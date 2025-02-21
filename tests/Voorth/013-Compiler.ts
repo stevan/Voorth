@@ -10,7 +10,7 @@ function Test013a () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : countdown
             BEGIN
                 DUP 1 - DUP 0 ==
@@ -20,7 +20,7 @@ function Test013a () {
         5 countdown
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -39,7 +39,7 @@ function Test013b () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : countup
             BEGIN
             DUP
@@ -51,7 +51,7 @@ function Test013b () {
         5 countup
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

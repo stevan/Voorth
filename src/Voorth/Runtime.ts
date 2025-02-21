@@ -4,6 +4,38 @@ import { Words }      from './Words';
 import { Library }    from './Library';
 import { ExecTokens } from './ExecTokens';
 
+export class Tape {
+    private $index   : number;
+    private $tokens  : ExecTokens.ExecToken[];
+    private $invoke? : Tape;
+
+    constructor (exe? : ExecTokens.ExecStream) {
+        this.$index  = 0;
+        this.$tokens = exe ? [...exe] : [];
+    }
+
+    invoke (tape : Tape)     : void { this.$invoke = tape   }
+    jump   (offset : number) : void { this.$index += offset }
+
+    load (source : ExecTokens.ExecToken[]) {
+        this.$tokens.push(...source);
+    }
+
+    *play () : ExecTokens.ExecStream {
+        while (this.$index < this.$tokens.length) {
+            let xt = this.$tokens[ this.$index++ ] as ExecTokens.ExecToken;
+            yield xt;
+
+            if (this.$invoke) {
+                let invoked = this.$invoke;
+                this.$invoke = undefined;
+                yield* invoked.play();
+            }
+        }
+        this.$index = 0;
+    }
+}
+
 export class Runtime {
     public stack   : Literals.Stack;
     public control : Literals.Stack;
@@ -16,8 +48,13 @@ export class Runtime {
         this.loadBuiltIns();
     }
 
-    bindWord (w : Words.RuntimeWord) : void {
-        this.dict.bind(w);
+    bindUserWord (name : string, exec : ExecTokens.ExecStream) : void {
+        this.dict.bind(
+            Words.createUserWord(
+                name,
+                new Tape(exec)
+            )
+        );
     }
 
     private loadBuiltIns () : void {

@@ -10,13 +10,13 @@ function Test011a () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : greet "Hello World" ;
 
         greet
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -30,13 +30,13 @@ function Test011b () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : greet "Hello " SWAP ~ ;
 
         "World" greet
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

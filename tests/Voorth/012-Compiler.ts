@@ -10,14 +10,14 @@ function Test012a () {
     let compiler = new Voorth.Compiler(runtime);
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = compiler.compile(Voorth.Tokens.tokenize(`
+    let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : greet 12 < IF "Good Morning" ELSE "Good Day" THEN ;
 
         14 greet
         10 greet
     `));
 
-    executor.execute(tape);
+    executor.execute(new Voorth.Tape(exe));
 
     //let greet = runtime.dict.lookup(new Voorth.Literals.WordRef('greet')) as Voorth.Words.UserWord;
     //for (const xt of greet.body.play()) {

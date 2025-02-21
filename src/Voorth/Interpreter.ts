@@ -1,6 +1,6 @@
 
 import { Tokens }     from './Tokens';
-import { Runtime }    from './Runtime';
+import { Runtime, Tape }    from './Runtime';
 import { Compiler }   from './Compiler';
 import { Executors }  from './Executors';
 
@@ -16,7 +16,7 @@ export class Interpreter {
     }
 
     run (src : string) : void {
-        let tape = this.compiler.compile(Tokens.tokenize(src));
+        let tape = new Tape(this.compiler.compile(Tokens.tokenize(src)));
         this.executor.execute(tape);
     }
 }

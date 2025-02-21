@@ -9,7 +9,7 @@ function Test005a () {
     let runtime  = new Voorth.Runtime();
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let tape = new Voorth.ExecTokens.Tape();
+    let tape = new Voorth.Tape();
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(20)),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(10)),
@@ -28,15 +28,15 @@ function Test005b () {
     let runtime  = new Voorth.Runtime();
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let addTen = new Voorth.ExecTokens.Tape();
+    let addTen = new Voorth.Tape();
     addTen.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(10)),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.bindWord(Voorth.Words.createUserWord('add10', addTen));
+    runtime.dict.bind(Voorth.Words.createUserWord('add10', addTen));
 
-    let tape = new Voorth.ExecTokens.Tape();
+    let tape = new Voorth.Tape();
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(20)),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('add10')),
@@ -54,15 +54,15 @@ function Test005c () {
     let runtime  = new Voorth.Runtime();
     let executor = new Voorth.Executors.Executor(runtime);
 
-    let addTen = new Voorth.ExecTokens.Tape();
+    let addTen = new Voorth.Tape();
     addTen.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(10)),
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.bindWord(Voorth.Words.createUserWord('add10', addTen));
+    runtime.dict.bind(Voorth.Words.createUserWord('add10', addTen));
 
-    let tape = new Voorth.ExecTokens.Tape();
+    let tape = new Voorth.Tape();
     tape.load([
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.Num(50)),
         Voorth.ExecTokens.createConstToken(new Voorth.Literals.WordRef('add10')),

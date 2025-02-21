@@ -1,13 +1,12 @@
 
-import { Tokens }     from './Tokens';
-import { ExecTokens } from './ExecTokens';
-import { Runtime }    from './Runtime';
+import { Tokens }        from './Tokens';
+import { Runtime, Tape } from './Runtime';
 
 export namespace Words {
 
-    export type UserWordBody     = ExecTokens.Tape;
+    export type UserWordBody     = Tape;
     export type NativeWordBody   = (runtime : Runtime) => void;
-    export type CompilerWordBody = (tokens : Tokens.TokenStream, tape : ExecTokens.Tape) => void;
+    export type CompilerWordBody = (tokens : Tokens.TokenStream, tape : Tape) => void;
 
     export type UserWord     = { type : 'USER',     name : string, body : UserWordBody }
     export type NativeWord   = { type : 'NATIVE',   name : string, body : NativeWordBody }
