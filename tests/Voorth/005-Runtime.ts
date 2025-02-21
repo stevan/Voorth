@@ -34,7 +34,7 @@ function Test005b () {
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.dict.bind(Voorth.Words.createUserWord('add10', addTen));
+    runtime.bindWord(Voorth.Words.createUserWord('add10', addTen));
 
     let tape = new Voorth.ExecTokens.Tape();
     tape.load([
@@ -60,7 +60,7 @@ function Test005c () {
         Voorth.ExecTokens.createCallToken(new Voorth.Literals.WordRef('+')),
     ]);
 
-    runtime.dict.bind(Voorth.Words.createUserWord('add10', addTen));
+    runtime.bindWord(Voorth.Words.createUserWord('add10', addTen));
 
     let tape = new Voorth.ExecTokens.Tape();
     tape.load([

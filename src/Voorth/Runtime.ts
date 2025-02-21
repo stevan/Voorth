@@ -16,8 +16,12 @@ export class Runtime {
         this.loadBuiltIns();
     }
 
+    bindWord (w : Words.RuntimeWord) : void {
+        this.dict.bind(w);
+    }
+
     private loadBuiltIns () : void {
-        const loadWord = (
+        const loadBuiltIn = (
             name : string,
             body : Words.NativeWordBody
         ) => this.dict.bind(Words.createNativeWord(name, body));
@@ -26,8 +30,8 @@ export class Runtime {
         // Debugging
         // =====================================================================
 
-        loadWord('.SHOW!', (r) => console.log("PEEK:", this.stack.peek()));
-        loadWord('.DUMP!', (r) => console.log("STACK:", ...this.stack.toArray()));
+        loadBuiltIn('.SHOW!', (r) => console.log("PEEK:", this.stack.peek()));
+        loadBuiltIn('.DUMP!', (r) => console.log("STACK:", ...this.stack.toArray()));
 
         // =====================================================================
         // Stack Operators
@@ -42,11 +46,11 @@ export class Runtime {
         // OVER  ( b a   -- b a b ) like DUP, but for the 2nd item on the stack
         // ROT   ( c b a -- b a c ) rotate the 3rd item to the top of the stack
 
-        loadWord('DUP',  (r) => this.stack.dup());
-        loadWord('OVER', (r) => this.stack.over());
-        loadWord('DROP', (r) => this.stack.drop());
-        loadWord('SWAP', (r) => this.stack.swap());
-        loadWord('ROT',  (r) => this.stack.rot());
+        loadBuiltIn('DUP',  (r) => this.stack.dup());
+        loadBuiltIn('OVER', (r) => this.stack.over());
+        loadBuiltIn('DROP', (r) => this.stack.drop());
+        loadBuiltIn('SWAP', (r) => this.stack.swap());
+        loadBuiltIn('ROT',  (r) => this.stack.rot());
 
         // ---------------------------------------------------------------------
         // Contorl Stack Ops
@@ -57,10 +61,10 @@ export class Runtime {
         // ^R!  (   --   ) (   --   ) drop the top of the control stack
         // ---------------------------------------------------------------------
 
-        loadWord('>R!', (r) => this.control.push(this.stack.pop()));
-        loadWord('<R!', (r) => this.stack.push(this.control.pop()));
-        loadWord('.R!', (r) => this.stack.push(this.control.peek()));
-        loadWord('^R!', (r) => this.control.drop());
+        loadBuiltIn('>R!', (r) => this.control.push(this.stack.pop()));
+        loadBuiltIn('<R!', (r) => this.stack.push(this.control.pop()));
+        loadBuiltIn('.R!', (r) => this.stack.push(this.control.peek()));
+        loadBuiltIn('^R!', (r) => this.control.drop());
 
         // =====================================================================
         // BinOps
@@ -70,7 +74,7 @@ export class Runtime {
         // Strings
         // ---------------------------------------------------------------------
 
-        loadWord('~', (r) => {
+        loadBuiltIn('~', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Str(lhs.toNative() + rhs.toNative()))
@@ -80,13 +84,13 @@ export class Runtime {
         // Equality
         // ---------------------------------------------------------------------
 
-        loadWord('==', (r) => {
+        loadBuiltIn('==', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() == rhs.toNative()))
         });
 
-        loadWord('!=', (r) => {
+        loadBuiltIn('!=', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() != rhs.toNative()))
@@ -96,25 +100,25 @@ export class Runtime {
         // Comparison
         // ---------------------------------------------------------------------
 
-        loadWord('>', (r) => {
+        loadBuiltIn('>', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() > rhs.toNative()))
         });
 
-        loadWord('>=', (r) => {
+        loadBuiltIn('>=', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() >= rhs.toNative()))
         });
 
-        loadWord('<=', (r) => {
+        loadBuiltIn('<=', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() <= rhs.toNative()))
         });
 
-        loadWord('<', (r) => {
+        loadBuiltIn('<', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() < rhs.toNative()))
@@ -124,31 +128,31 @@ export class Runtime {
         // Math Ops
         // ---------------------------------------------------------------------
 
-        loadWord('+', (r) => {
+        loadBuiltIn('+', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() + rhs.toNative()))
         });
 
-        loadWord('-', (r) => {
+        loadBuiltIn('-', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() - rhs.toNative()))
         });
 
-        loadWord('*', (r) => {
+        loadBuiltIn('*', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() * rhs.toNative()))
         });
 
-        loadWord('/', (r) => {
+        loadBuiltIn('/', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() / rhs.toNative()))
         });
 
-        loadWord('%', (r) => {
+        loadBuiltIn('%', (r) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() % rhs.toNative()))

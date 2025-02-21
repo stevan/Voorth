@@ -88,8 +88,6 @@ export namespace Executors {
                 case ExecTokens.isExitToken(xt):
                     yield (r) => { console.log('Goodbye!'); }
                     return;
-
-                // Error
                 // -----------------------------------------------------------------
                 default:
                     throw new Error("Unrecognized Token" + xt);

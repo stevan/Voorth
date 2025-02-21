@@ -25,7 +25,7 @@ export class Compiler {
         //console.log("BEGIN WORD: ", name);
         let tape = this.loadTape(this.compileControlStructures(this.extractWordBody(tokens)));
         //console.log("END WORD: ", name);
-        this.runtime.dict.bind(Words.createUserWord(name, tape));
+        this.runtime.bindWord(Words.createUserWord(name, tape));
     }
 
     private extractName (tokens : Tokens.TokenStream) : string {
