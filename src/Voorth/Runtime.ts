@@ -7,15 +7,13 @@ import { ExecTokens } from './ExecTokens';
 export class Tape {
     private $index   : number;
     private $tokens  : ExecTokens.ExecToken[];
-    //private $invoke? : Tape;
 
     constructor (exe? : ExecTokens.ExecStream) {
         this.$index  = 0;
         this.$tokens = exe ? [...exe] : [];
     }
 
-    //invoke (tape : Tape)     : void { this.$invoke = tape   }
-    jump   (offset : number) : void { this.$index += offset }
+    jump (offset : number) : void { this.$index += offset }
 
     load (source : ExecTokens.ExecToken[]) {
         this.$tokens.push(...source);
@@ -25,12 +23,6 @@ export class Tape {
         while (this.$index < this.$tokens.length) {
             let xt = this.$tokens[ this.$index++ ] as ExecTokens.ExecToken;
             yield xt;
-
-            //if (this.$invoke) {
-            //    let invoked = this.$invoke;
-            //    this.$invoke = undefined;
-            //    yield* invoked.play();
-            //}
         }
         this.$index = 0;
     }

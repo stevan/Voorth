@@ -1,11 +1,12 @@
 
 import { Literals } from './Literals';
 import { Tokens }   from './Tokens';
+import { Tape }     from './Runtime';
 
 export namespace ExecTokens {
     export type ConstToken  = { type : 'CONST', literal   : Literals.Literal }
-    export type CallToken   = { type : 'CALL',  wordRef   : Literals.WordRef }
-    export type MoveToken   = { type : 'MOVE',  jumpToken : Tokens.JumpToken }
+    export type CallToken   = { type : 'CALL',  wordRef   : Literals.WordRef, resolved? : Words.RuntimeWord }
+    export type MoveToken   = { type : 'MOVE',  jumpToken : Tokens.JumpToken, tape?     : Tape }
     export type InvokeToken = { type : 'INVOKE' }
     export type WaitToken   = { type : 'WAIT'   }
     export type ExitToken   = { type : 'EXIT'   }
