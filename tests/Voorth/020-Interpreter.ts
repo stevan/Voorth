@@ -9,24 +9,30 @@ function Test020a () {
     let i = new Voorth.Interpreter();
 
     i.run(`
-        : countdown
-            DUP 0 DO
-                DUP 1 -
-            LOOP ;
-
-        5 countdown
+        : EGGSIZE // ( n -- )
+               DUP 18 < IF  "reject"      ELSE
+               DUP 21 < IF  "small"       ELSE
+               DUP 24 < IF  "medium"      ELSE
+               DUP 27 < IF  "large"       ELSE
+               DUP 30 < IF  "extra large" ELSE
+                  "error"
+               THEN THEN THEN THEN THEN SWAP DROP ;
+        10  EGGSIZE
+        19  EGGSIZE
+        22  EGGSIZE
+        25  EGGSIZE
+        29  EGGSIZE
+        31  EGGSIZE
     `);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
 
     // results are in reverse order ...
-    let results = i.runtime.stack.toNative().reverse();
+    let got      = i.runtime.stack.toNative().reverse();
+    let expected = [ 'error', 'extra large', 'large', 'medium', 'small', 'reject' ];
 
-    let x = 0;
-    while (x <= 5) {
-        test.is(results.shift(), x++, '... got the expected results');
-    }
+    test.is(got.join(','), expected.join(','), '... got the expected results');
 }
 
 Test020a();

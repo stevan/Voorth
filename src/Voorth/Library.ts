@@ -21,5 +21,4 @@ export namespace Library {
     }
 
     export class RuntimeDict extends Dictionary<Words.RuntimeWord>  {}
-    export class CompileDict extends Dictionary<Words.CompilerWord> {}
 }

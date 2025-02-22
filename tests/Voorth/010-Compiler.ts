@@ -6,15 +6,15 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test010a () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //console.log(runtime.stack)
 
@@ -23,15 +23,15 @@ function Test010a () {
 }
 
 function Test010b () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 +
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //console.log(runtime.stack)
 
@@ -40,15 +40,15 @@ function Test010b () {
 }
 
 function Test010c () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
         10 1 + 20 +
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //console.log(runtime.stack)
 
@@ -57,15 +57,15 @@ function Test010c () {
 }
 
 function Test010d () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
-        10 1 + 20 &+ >R! INVOKE!
+        10 1 + 20 &+ INVOKE!
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //console.log(runtime.stack)
 

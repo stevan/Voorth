@@ -1,16 +1,16 @@
 
-import { Tokens }     from './Tokens';
-import { Literals }   from './Literals';
-import { ExecTokens } from './ExecTokens';
-import { Runtime }    from './Runtime';
-import { Library }    from './Library';
-import { Words }      from './Words';
+import { Tokens }         from './Tokens';
+import { Literals }       from './Literals';
+import { CompiledTokens } from './CompiledTokens';
+import { Runtime }        from './Runtime';
+import { Library }        from './Library';
+import { Words }          from './Words';
 
 export class Compiler {
 
     constructor(public runtime : Runtime) {}
 
-    compile (tokens : Tokens.TokenStream) : ExecTokens.ExecStream {
+    compile (tokens : Tokens.TokenStream) : CompiledTokens.CompiledStream {
         return this.compileStream(
             this.compileControlStructures(
                 this.compileWordDefinitions(
@@ -49,18 +49,18 @@ export class Compiler {
         throw new Error(`Reached end of token stream without encountering word end (;)`);
     }
 
-    private *compileStream (tokens : Tokens.TokenStream) : ExecTokens.ExecStream {
+    private *compileStream (tokens : Tokens.TokenStream) : CompiledTokens.CompiledStream {
         for (const token of tokens) {
             if (Tokens.isLiteralToken(token)) {
                 switch (true) {
                 case Tokens.isNumberToken(token):
-                    yield ExecTokens.createConstToken(new Literals.Num(parseInt(token.value)))
+                    yield CompiledTokens.createConstToken(new Literals.Num(parseInt(token.value)))
                     break;
                 case Tokens.isStringToken(token):
-                    yield ExecTokens.createConstToken(new Literals.Str(token.value.slice(1,-1)))
+                    yield CompiledTokens.createConstToken(new Literals.Str(token.value.slice(1,-1)))
                     break;
                 case Tokens.isBooleanToken(token):
-                    yield ExecTokens.createConstToken(new Literals.Bool(token.value == '#t'))
+                    yield CompiledTokens.createConstToken(new Literals.Bool(token.value == '#t'))
                     break;
                 default:
                     throw new Error(`Unrecognized (Const) token (${JSON.stringify(token)})`)
@@ -68,19 +68,15 @@ export class Compiler {
             }
             else if (Tokens.isWordToken(token)) {
                 let name = token.value;
-                switch (true) {
-                case /^\&/.test(name):
-                    yield ExecTokens.createConstToken(new Literals.WordRef(name.slice(1)))
-                    break;
-                case (name == "INVOKE!"):
-                    yield ExecTokens.createInvokeToken()
-                    break;
-                default:
-                    yield ExecTokens.createCallToken(new Literals.WordRef(name))
+                if (/^\&/.test(name)) {
+                    yield CompiledTokens.createConstToken(new Literals.WordRef(name.slice(1)))
+                }
+                else {
+                    yield CompiledTokens.createCallToken(new Literals.WordRef(name))
                 }
             }
             else if (Tokens.isJumpToken(token)) {
-                yield ExecTokens.createMoveToken(token)
+                yield CompiledTokens.createMoveToken(token)
             }
             else {
                 throw new Error(`Unrecognized (??) token (${JSON.stringify(token)})`);

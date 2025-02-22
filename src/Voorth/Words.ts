@@ -1,21 +1,18 @@
 
-import { Tokens }        from './Tokens';
-import { Runtime, Tape } from './Runtime';
+import { Tokens }  from './Tokens';
+import { Runtime } from './Runtime';
+import { Tapes }   from './Tapes';
 
 export namespace Words {
 
-    export type UserWordBody     = Tape;
+    export type UserWordBody     = Tapes.CompiledTape;
     export type NativeWordBody   = (runtime : Runtime) => void;
-    export type CompilerWordBody = (tokens : Tokens.TokenStream, tape : Tape) => void;
 
-    export type UserWord     = { type : 'USER',     name : string, body : UserWordBody }
-    export type NativeWord   = { type : 'NATIVE',   name : string, body : NativeWordBody }
-    export type CompilerWord = { type : 'COMPILER', name : string, body : CompilerWordBody }
+    export type UserWord     = { type : 'USER',   name : string, body : UserWordBody }
+    export type NativeWord   = { type : 'NATIVE', name : string, body : NativeWordBody }
 
     export type RuntimeWord  = UserWord | NativeWord;
-    export type Word         = UserWord | NativeWord | CompilerWord;
-
-    export type CompiledStream = Generator<RuntimeWord, void, void>;
+    export type Word         = UserWord | NativeWord;
 
     // -------------------------------------------------------------------------
 
@@ -27,13 +24,9 @@ export namespace Words {
         return { type : 'NATIVE', name : n, body : b } as NativeWord
     }
 
-    export function createCompilerWord (n : string, b : CompilerWordBody) : CompilerWord {
-        return { type : 'COMPILER', name : n, body : b } as CompilerWord
-    }
 
     export function isUserWord     (w : Word) : w is UserWord     { return w.type == 'USER'     }
     export function isNativeWord   (w : Word) : w is NativeWord   { return w.type == 'NATIVE'   }
-    export function isCompilerWord (w : Word) : w is CompilerWord { return w.type == 'COMPILER' }
     export function isRuntimeWord  (w : Word) : w is RuntimeWord  { return isNativeWord(w) || isUserWord(w) }
 
     export function assertRuntimeWord (w : Word) : asserts w is RuntimeWord {
@@ -48,9 +41,6 @@ export namespace Words {
         if (!isUserWord(w)) throw new Error("Not UserWord")
     }
 
-    export function assertCompilerWord (w : Word) : asserts w is CompilerWord {
-        if (!isCompilerWord(w)) throw new Error("Not CompilerWord")
-    }
 
     // -------------------------------------------------------------------------
 

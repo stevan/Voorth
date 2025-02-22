@@ -6,9 +6,9 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test012a () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : greet 12 < IF "Good Morning" ELSE "Good Day" THEN ;
@@ -17,7 +17,7 @@ function Test012a () {
         10 greet
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //let greet = runtime.dict.lookup(new Voorth.Literals.WordRef('greet')) as Voorth.Words.UserWord;
     //for (const xt of greet.body.play()) {

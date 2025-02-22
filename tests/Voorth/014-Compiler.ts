@@ -6,9 +6,9 @@ import * as Voorth from '../../src/Voorth'
 const test = new Test.Simple();
 
 function Test014a () {
-    let runtime  = new Voorth.Runtime();
-    let compiler = new Voorth.Compiler(runtime);
-    let executor = new Voorth.Executors.Executor(runtime);
+    let executor = new Voorth.Interpreter();
+    let runtime  = executor.runtime;
+    let compiler = executor.compiler;
 
     let exe = compiler.compile(Voorth.Tokens.tokenize(`
         : countdown
@@ -19,7 +19,7 @@ function Test014a () {
         5 countdown
     `));
 
-    executor.execute(new Voorth.Tape(exe));
+    executor.execute(new Voorth.Tapes.CompiledTape(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

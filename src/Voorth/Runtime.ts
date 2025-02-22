@@ -1,32 +1,9 @@
 
-import { Literals }   from './Literals';
-import { Words }      from './Words';
-import { Library }    from './Library';
-import { ExecTokens } from './ExecTokens';
-
-export class Tape {
-    private $index   : number;
-    private $tokens  : ExecTokens.ExecToken[];
-
-    constructor (exe? : ExecTokens.ExecStream) {
-        this.$index  = 0;
-        this.$tokens = exe ? [...exe] : [];
-    }
-
-    jump (offset : number) : void { this.$index += offset }
-
-    load (source : ExecTokens.ExecToken[]) {
-        this.$tokens.push(...source);
-    }
-
-    *play () : ExecTokens.ExecStream {
-        while (this.$index < this.$tokens.length) {
-            let xt = this.$tokens[ this.$index++ ] as ExecTokens.ExecToken;
-            yield xt;
-        }
-        this.$index = 0;
-    }
-}
+import { Literals }       from './Literals';
+import { Words }          from './Words';
+import { Library }        from './Library';
+import { CompiledTokens } from './CompiledTokens';
+import { Tapes }          from './Tapes';
 
 export class Runtime {
     public stack   : Literals.Stack;
@@ -40,11 +17,11 @@ export class Runtime {
         this.loadBuiltIns();
     }
 
-    bindUserWord (name : string, exec : ExecTokens.ExecStream) : void {
+    bindUserWord (name : string, compiled : CompiledTokens.CompiledStream) : void {
         this.dict.bind(
             Words.createUserWord(
                 name,
-                new Tape(exec)
+                new Tapes.CompiledTape(compiled)
             )
         );
     }

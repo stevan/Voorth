@@ -76,7 +76,7 @@ export namespace Literals {
     }
 
     export function assertWordRef (l : Literal) : asserts l is WordRef {
-        if (!(l instanceof WordRef)) throw new Error(`Not Bool (${JSON.stringify(l)})`)
+        if (!(l instanceof WordRef)) throw new Error(`Not WordRef (${JSON.stringify(l)})`)
     }
 
     // -------------------------------------------------------------------------
