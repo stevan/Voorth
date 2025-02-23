@@ -113,6 +113,22 @@ They are just nested dictionaries
 : time.later ( -- n ) .time.now 1 + ;
 ```
 
+## Variables
+
+Global variables only (for now) ... allocated at compile time.
+```
+$ var <value> ;
+```
+This creates the following words to handle them ...
+```
+>var     pop from the stack, store in the variable
+<var     clear the variable and push onto the stack
+.var     copy the variable and push onto the stack
+^var     clear the variable (does not affect the stack)
+?var     query if variable is defined, pushes bool on the stack
+&var     puts a reference to the variable on the stack
+```
+
 ## Control Structures
 
 ### Conditionals

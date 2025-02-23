@@ -3,7 +3,6 @@ import { Tokens }         from './Tokens';
 import { Literals }       from './Literals';
 import { CompiledTokens } from './CompiledTokens';
 import { Runtime }        from './Runtime';
-import { Library }        from './Library';
 import { Words }          from './Words';
 
 export class Compiler {

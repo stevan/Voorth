@@ -2,6 +2,36 @@
 # TODO
 <!----------------------------------------------------------------------------->
 
+- 2DROP, 2SWAP, etc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - make JIT/Mix Interpreter
     - compile Literal into NativeWord
         - squashes runs of Literal tokens into one NativeWord

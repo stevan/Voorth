@@ -4,7 +4,6 @@ import { Words }          from './Words';
 import { Tapes }          from './Tapes';
 import { Runtime }        from './Runtime';
 import { Compiler }       from './Compiler';
-import { Library }        from './Library';
 import { Literals }       from './Literals';
 import { CompiledTokens } from './CompiledTokens';
 
