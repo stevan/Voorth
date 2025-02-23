@@ -83,27 +83,6 @@ export namespace Literals {
     // Containers
     // -------------------------------------------------------------------------
 
-    export class Tuple implements Literal {
-        private $items : Literal[] = [];
-
-        constructor(public size : number) {}
-        toNum    () : number  { throw new Error("TODO") }
-        toBool   () : boolean { throw new Error("TODO") }
-        toStr    () : string  { throw new Error("TODO") }
-        toNative () : any { return this.$items.map((l) => l.toNative()) }
-
-        get (i : number) : Literal { return this.$items[i] as Literal }
-        set (i : number, l : Literal) : void { this.$items[i] = l }
-
-        // TODO:
-        // length
-        // equals
-    }
-
-    export function assertTuple (l : Literal) : asserts l is Tuple {
-        if (!(l instanceof Tuple)) throw new Error(`Not Tuple (${JSON.stringify(l)})`)
-    }
-
     export class Stack implements Literal {
         private $items : Literal[] = [];
 
@@ -124,6 +103,7 @@ export namespace Literals {
         drop () : void { this.$items.pop(); }
         dup  () : void { this.$items.push( this.$items.at(-1) as Literal ) }
         over () : void { this.$items.push( this.$items.at(-2) as Literal ) }
+        rdup () : void { this.$items.push( this.$items.at(-3) as Literal ) }
         swap () : void {
             let x = this.$items.pop() as Literal;
             let y = this.$items.pop() as Literal;
@@ -138,6 +118,15 @@ export namespace Literals {
             this.$items.push(x);
             this.$items.push(z);
         }
+        rrot () : void {
+            let x = this.$items.pop() as Literal;
+            let y = this.$items.pop() as Literal;
+            let z = this.$items.pop() as Literal;
+            this.$items.push(x);
+            this.$items.push(z);
+            this.$items.push(y);
+        }
+
 
         // TODO:
         // length
@@ -146,6 +135,27 @@ export namespace Literals {
 
     export function assertStack (l : Literal) : asserts l is Stack {
         if (!(l instanceof Stack)) throw new Error(`Not Stack (${JSON.stringify(l)})`)
+    }
+
+    export class Tuple implements Literal {
+        private $items : Literal[] = [];
+
+        constructor(public size : number) {}
+        toNum    () : number  { throw new Error("TODO") }
+        toBool   () : boolean { throw new Error("TODO") }
+        toStr    () : string  { throw new Error("TODO") }
+        toNative () : any { return this.$items.map((l) => l.toNative()) }
+
+        get (i : number) : Literal { return this.$items[i] as Literal }
+        set (i : number, l : Literal) : void { this.$items[i] = l }
+
+        // TODO:
+        // length
+        // equals
+    }
+
+    export function assertTuple (l : Literal) : asserts l is Tuple {
+        if (!(l instanceof Tuple)) throw new Error(`Not Tuple (${JSON.stringify(l)})`)
     }
 
     export class Queue implements Literal {

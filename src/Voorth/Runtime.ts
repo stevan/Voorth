@@ -53,10 +53,14 @@ export class Runtime {
         // ROT   ( c b a -- b a c ) rotate the 3rd item to the top of the stack
 
         loadBuiltIn('DUP',  (r) => this.stack.dup());
-        loadBuiltIn('OVER', (r) => this.stack.over());
         loadBuiltIn('DROP', (r) => this.stack.drop());
+
+        loadBuiltIn('OVER', (r) => this.stack.over());
         loadBuiltIn('SWAP', (r) => this.stack.swap());
+
+        loadBuiltIn('RDUP', (r) => this.stack.rdup());
         loadBuiltIn('ROT',  (r) => this.stack.rot());
+        loadBuiltIn('-ROT', (r) => this.stack.rrot());
 
         // ---------------------------------------------------------------------
         // Contorl Stack Ops
