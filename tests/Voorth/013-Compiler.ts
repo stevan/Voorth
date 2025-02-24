@@ -20,7 +20,7 @@ function Test013a () {
         5 countdown
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -51,7 +51,7 @@ function Test013b () {
         5 countup
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

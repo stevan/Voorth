@@ -16,7 +16,7 @@ function Test011a () {
         greet
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -36,7 +36,7 @@ function Test011b () {
         "World" greet
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

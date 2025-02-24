@@ -17,7 +17,7 @@ export class Interpreter {
     }
 
     run (src : string) : void {
-        let tape = new Tapes.CompiledTape(this.compiler.compile(Tokens.tokenize(src)));
+        let tape = this.compiler.compile(Tokens.tokenize(src));
         this.execute(tape);
     }
 
@@ -36,7 +36,7 @@ export class Interpreter {
                 Literals.assertWordRef(ref);
 
                 let word;
-                if (word = this.runtime.dict.lookup(ref)) {
+                if (word = this.runtime.library.lookup(ref)) {
                     if (Words.isNativeWord(word)) {
                         word.body(this.runtime);
                     }

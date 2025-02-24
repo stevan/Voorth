@@ -19,7 +19,7 @@ function Test014a () {
         5 countdown
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

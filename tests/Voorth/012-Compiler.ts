@@ -17,7 +17,7 @@ function Test012a () {
         10 greet
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //let greet = runtime.dict.lookup(new Voorth.Literals.WordRef('greet')) as Voorth.Words.UserWord;
     //for (const xt of greet.body.play()) {

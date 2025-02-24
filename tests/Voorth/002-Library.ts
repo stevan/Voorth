@@ -6,7 +6,8 @@ import * as Voorth from '../../src/Voorth'
 function Test002 () {
     let test = new Test.Simple();
 
-    let d = new Voorth.Library.RuntimeDict();
+    let coll = new Voorth.Library.Catalog();
+    let d   = coll.createVolume("Foo");
 
     let foo = Voorth.Words.createNativeWord('foo', (r) => {});
     d.bind(foo);

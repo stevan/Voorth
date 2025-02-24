@@ -2,6 +2,7 @@
 import { Tokens }         from './Tokens';
 import { Literals }       from './Literals';
 import { CompiledTokens } from './CompiledTokens';
+import { Tapes }          from './Tapes';
 import { Runtime }        from './Runtime';
 import { Words }          from './Words';
 
@@ -9,11 +10,13 @@ export class Compiler {
 
     constructor(public runtime : Runtime) {}
 
-    compile (tokens : Tokens.TokenStream) : CompiledTokens.CompiledStream {
-        return this.compileStream(
-            this.compileControlStructures(
-                this.compileWordDefinitions(
-                    tokens
+    compile (tokens : Tokens.TokenStream) : Tapes.CompiledTape {
+        return new Tapes.CompiledTape(
+            this.compileStream(
+                this.compileControlStructures(
+                    this.compileWordDefinitions(
+                        tokens
+                    )
                 )
             )
         );
@@ -22,9 +25,9 @@ export class Compiler {
     compileWord (tokens : Tokens.TokenStream) : void {
         let name = this.extractName(tokens);
         //console.log("BEGIN WORD: ", name);
-        let exec = this.compileStream(this.compileControlStructures(this.extractWordBody(tokens)));
+        let compiled = this.compileStream(this.compileControlStructures(this.extractWordBody(tokens)));
         //console.log("END WORD: ", name);
-        this.runtime.bindUserWord(name, exec);
+        this.runtime.library.bindToCurrentVolume(Words.createUserWord(name, new Tapes.CompiledTape(compiled)));
     }
 
     private extractName (tokens : Tokens.TokenStream) : string {
@@ -88,6 +91,18 @@ export class Compiler {
     private *compileWordDefinitions (tokens : Tokens.TokenStream) : Tokens.TokenStream {
         for (const token of tokens) {
             if (Tokens.isWordToken(token)) {
+
+                if (token.value == '::') {
+                    let name = this.extractName(tokens);
+                    this.runtime.library.createVolume(name);
+                    continue;
+                }
+
+                if (token.value == ';;') {
+                    this.runtime.library.exitCurrentVolume();
+                    continue;
+                }
+
                 if (token.value == ':') {
                     this.compileWord(tokens);
                     continue;

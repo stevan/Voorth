@@ -33,6 +33,9 @@ function Test020a () {
     let expected = [ 'error', 'extra large', 'large', 'medium', 'small', 'reject' ];
 
     test.is(got.join(','), expected.join(','), '... got the expected results');
+
+    console.log(i.runtime.library.stack);
+    console.log(i.runtime.library.shelf);
 }
 
 Test020a();

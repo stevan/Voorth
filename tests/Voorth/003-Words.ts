@@ -23,12 +23,12 @@ function Test003 () {
     test.is(out[0], 'Hello', '... got the first output');
     test.is(out[1], 'World!', '... got the second output');
 
-    let dict = new Voorth.Library.RuntimeDict();
-    dict.bind(w1);
-    dict.bind(w2);
+    // let dict = new Voorth.Library.RuntimeDict();
+    // dict.bind(w1);
+    // dict.bind(w2);
 
-    test.ok(dict.lookup(new Voorth.Literals.WordRef('HELLO')) === w1, '... fetched the right word');
-    test.ok(dict.lookup(new Voorth.Literals.WordRef('WORLD')) === w2, '... fetched the right word');
+    // test.ok(dict.lookup(new Voorth.Literals.WordRef('HELLO')) === w1, '... fetched the right word');
+    // test.ok(dict.lookup(new Voorth.Literals.WordRef('WORLD')) === w2, '... fetched the right word');
 
     test.done();
 }

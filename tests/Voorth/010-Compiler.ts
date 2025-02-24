@@ -14,7 +14,7 @@ function Test010a () {
         10
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.stack)
 
@@ -31,7 +31,7 @@ function Test010b () {
         10 1 +
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.stack)
 
@@ -48,7 +48,7 @@ function Test010c () {
         10 1 + 20 +
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.stack)
 
@@ -65,7 +65,7 @@ function Test010d () {
         10 1 + 20 &+ INVOKE!
     `));
 
-    executor.execute(new Voorth.Tapes.CompiledTape(exe));
+    executor.execute(exe);
 
     //console.log(runtime.stack)
 

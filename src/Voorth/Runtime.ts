@@ -2,35 +2,30 @@
 import { Literals }       from './Literals';
 import { Words }          from './Words';
 import { Library }        from './Library';
-import { CompiledTokens } from './CompiledTokens';
-import { Tapes }          from './Tapes';
 
 export class Runtime {
     public stack   : Literals.Stack;
     public control : Literals.Stack;
-    public dict    : Library.RuntimeDict;
+    public library : Library.Catalog;
 
     constructor () {
         this.stack   = new Literals.Stack();
         this.control = new Literals.Stack();
-        this.dict    = new Library.RuntimeDict();
-        this.loadBuiltIns();
-    }
+        this.library = new Library.Catalog();
 
-    bindUserWord (name : string, compiled : CompiledTokens.CompiledStream) : void {
-        this.dict.bind(
-            Words.createUserWord(
-                name,
-                new Tapes.CompiledTape(compiled)
-            )
-        );
+        this.loadBuiltIns();
+        this.library.createVolume('_');
     }
 
     private loadBuiltIns () : void {
         const loadBuiltIn = (
             name : string,
             body : Words.NativeWordBody
-        ) => this.dict.bind(Words.createNativeWord(name, body));
+        ) => this.library.bindToCurrentVolume(
+            Words.createNativeWord(name, body)
+        );
+
+        this.library.createVolume('CORE');
 
         // =====================================================================
         // Debugging
@@ -167,6 +162,8 @@ export class Runtime {
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() % rhs.toNative()))
         });
+
+        this.library.exitCurrentVolume();
     }
 
 }
