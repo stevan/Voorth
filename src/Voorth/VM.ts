@@ -31,7 +31,7 @@ export namespace VM {
     export function isOperator (i : Instruction) : i is Operator { return i.type == 'OP' }
     export function isConstant (i : Instruction) : i is Constant { return i.type == 'CONST' }
 
-    export class Processor {
+    export class ProcessingUnit {
         public stack    : Stack;
         public control  : Control;
         public tether   : Tether;
