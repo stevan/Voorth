@@ -17,6 +17,8 @@ function Test030 () {
 
     i.send(`
         "ho" dup3
+
+        10 1 + 20 &+ INVOKE!
     `);
 
     vm.run();
@@ -26,7 +28,7 @@ function Test030 () {
 
     test.is(
         vm.stack.join(','),
-        'hey,hey,hey,ho,ho,ho',
+        'hey,hey,hey,ho,ho,ho,31',
         '... got the expected output'
     );
 

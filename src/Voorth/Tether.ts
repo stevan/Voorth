@@ -28,7 +28,11 @@ export class Tether {
                     yield { type : 'CONST', value : t.literal.toNative() as VM.Literal };
                     break;
                 case ExecTokens.isInvokeToken(t):
-                    throw new Error("TODO");
+                    let name : string = yield { type : 'OP', value : 'CALL?' };
+                    if (name.indexOf('&') != 0) throw new Error(`Not a word ref string ${name}`);
+                    tape.invoke(new Literals.WordRef(name.slice(1)));
+                    // send NOOP instruction that can be ignored
+                    yield { type : 'OP', value : 'NOOP' };
                     break;
                 case ExecTokens.isCallToken(t):
                     let userWord = t.word as Words.UserWord;

@@ -13,6 +13,7 @@ export namespace VM {
         | '~'
         | '>R!'  | '<R!'  | '.R!' | '^R!'
         | 'JUMP?'
+        | 'CALL?'
         | 'NOOP'
     ;
 
@@ -56,6 +57,10 @@ export namespace VM {
                     let rhs, lhs, x, y, z;
                     switch (inst.value) {
                     case 'JUMP?':
+                        x = stack.pop() as Literal;
+                        stream.next(x);
+                        break;
+                    case 'CALL?':
                         x = stack.pop() as Literal;
                         stream.next(x);
                         break;

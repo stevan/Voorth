@@ -38,18 +38,7 @@ export class Interpreter {
                 break;
             case ExecTokens.isInvokeToken(t):
                 let dynRef = this.runtime.stack.pop() as Literals.WordRef;
-                let dynWord : Words.RuntimeWord | undefined;
-                if (dynWord = this.runtime.library.lookup(dynRef)) {
-                    if (Words.isNativeWord(dynWord)) {
-                        dynWord.body(this.runtime);
-                    }
-                    else {
-                        this.execute(dynWord.body);
-                    }
-                }
-                else {
-                    throw new Error(`Could not INVOKE word(${dynRef.name})`);
-                }
+                tape.invoke(dynRef);
                 break;
             case ExecTokens.isCallToken(t):
                 let userWord = t.word as Words.UserWord;

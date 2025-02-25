@@ -41,10 +41,15 @@ export namespace Tapes {
     export class ExecutableTape implements Tape<ExecTokens.ExecToken> {
         private $runtime  : Runtime;
         private $compiled : CompiledTape;
+        private $invoke?  : Literals.WordRef;
 
         constructor (compiled : CompiledTape, runtime : Runtime) {
             this.$compiled = compiled;
             this.$runtime  = runtime;
+        }
+
+        invoke (wordRef : Literals.WordRef) : void {
+            this.$invoke = wordRef;
         }
 
         jump (offset : number) : void {
@@ -64,20 +69,22 @@ export namespace Tapes {
                     let ref = t.wordRef as Literals.WordRef;
                     if (ref.name == 'INVOKE!') {
                         yield ExecTokens.createInvokeToken();
+                        if (this.$invoke) {
+                            ref = this.$invoke;
+                            this.$invoke = undefined;
+                        }
                     }
-                    else {
-                        let word : Words.RuntimeWord | undefined;
-                        if (word = this.$runtime.library.lookup(ref)) {
-                            if (Words.isNativeWord(word)) {
-                                yield ExecTokens.createBuiltinToken(word);
-                            }
-                            else {
-                                yield ExecTokens.createCallToken(word);
-                            }
+                    let word : Words.RuntimeWord | undefined;
+                    if (word = this.$runtime.library.lookup(ref)) {
+                        if (Words.isNativeWord(word)) {
+                            yield ExecTokens.createBuiltinToken(word);
                         }
                         else {
-                            throw new Error(`Could not find word(${ref.name})`);
+                            yield ExecTokens.createCallToken(word);
                         }
+                    }
+                    else {
+                        throw new Error(`Could not find word(${ref.name})`);
                     }
                     break;
                 case CompiledTokens.isMoveToken(t):
