@@ -1,12 +1,12 @@
 
-import { Tokens }         from './Tokens';
-import { Words }          from './Words';
-import { Tapes }          from './Tapes';
-import { Runtime }        from './Runtime';
-import { Compiler }       from './Compiler';
-import { Literals }       from './Literals';
-import { Tether }         from './Tether';
-import { CompiledTokens } from './CompiledTokens';
+import { Tokens }     from './Tokens';
+import { Words }      from './Words';
+import { Tapes }      from './Tapes';
+import { Runtime }    from './Runtime';
+import { Compiler }   from './Compiler';
+import { Literals }   from './Literals';
+import { Tether }     from './Tether';
+import { ExecTokens } from './ExecTokens';
 
 export class Interpreter {
     public compiler : Compiler;
@@ -29,43 +29,45 @@ export class Interpreter {
         this.tether.load(tape);
     }
 
-    execute (tape : Tapes.CompiledTape) : void {
+    execute (compiled : Tapes.CompiledTape) : void {
+        let tape = new Tapes.ExecutableTape(compiled, this.runtime);
         for (const t of tape.play()) {
             //console.log("EXECUTING: ", t);
             switch (true) {
-            case CompiledTokens.isConstToken(t):
+            case ExecTokens.isConstToken(t):
                 this.runtime.stack.push(t.literal)
                 break;
-            case CompiledTokens.isCallToken(t):
-                let ref = t.wordRef as Literals.WordRef;
-                if (ref.name == 'INVOKE!') {
-                    ref = this.runtime.stack.pop() as Literals.WordRef;
-                }
-                Literals.assertWordRef(ref);
-
-                let word;
-                if (word = this.runtime.library.lookup(ref)) {
-                    if (Words.isNativeWord(word)) {
-                        word.body(this.runtime);
+            case ExecTokens.isInvokeToken(t):
+                let dynRef = this.runtime.stack.pop() as Literals.WordRef;
+                let dynWord : Words.RuntimeWord | undefined;
+                if (dynWord = this.runtime.library.lookup(dynRef)) {
+                    if (Words.isNativeWord(dynWord)) {
+                        dynWord.body(this.runtime);
                     }
                     else {
-                        this.execute(word.body);
+                        this.execute(dynWord.body);
                     }
                 }
                 else {
-                    throw new Error(`Could not find word(${ref.name})`);
+                    throw new Error(`Could not INVOKE word(${dynRef.name})`);
                 }
                 break;
-            case CompiledTokens.isMoveToken(t):
-                let jump = t.jump;
-                if (jump.conditional) {
-                    let cond = this.runtime.stack.pop();
-                    if (!cond.toBool())
-                        tape.jump(jump.offset);
+            case ExecTokens.isCallToken(t):
+                let userWord = t.word as Words.UserWord;
+                this.execute(userWord.body);
+                break;
+            case ExecTokens.isBuiltinToken(t):
+                let builtinWord = t.word as Words.NativeWord;
+                builtinWord.body(this.runtime);
+                break;
+            case ExecTokens.isCondToken(t):
+                let cond = this.runtime.stack.pop();
+                if (!cond.toBool()) {
+                    tape.jump(t.offset);
                 }
-                else {
-                    tape.jump(jump.offset);
-                }
+                break;
+            case ExecTokens.isMoveToken(t):
+                tape.jump(t.offset);
                 break;
             default:
                 throw new Error(`Unrecognized token ${JSON.stringify(t)}`)

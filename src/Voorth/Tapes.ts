@@ -1,5 +1,9 @@
 
+import { Words }          from './Words';
+import { Literals }       from './Literals';
+import { Runtime }        from './Runtime';
 import { CompiledTokens } from './CompiledTokens';
+import { ExecTokens }     from './ExecTokens';
 
 export namespace Tapes {
 
@@ -27,10 +31,69 @@ export namespace Tapes {
 
         *play () : TapeStream<CompiledTokens.CompiledToken> {
             while (this.$index < this.$tokens.length) {
-                let xt = this.$tokens[ this.$index++ ] as CompiledTokens.CompiledToken;
-                yield xt;
+                let ct = this.$tokens[ this.$index++ ] as CompiledTokens.CompiledToken;
+                yield ct;
             }
             this.$index = 0;
+        }
+    }
+
+    export class ExecutableTape implements Tape<ExecTokens.ExecToken> {
+        private $runtime  : Runtime;
+        private $compiled : CompiledTape;
+
+        constructor (compiled : CompiledTape, runtime : Runtime) {
+            this.$compiled = compiled;
+            this.$runtime  = runtime;
+        }
+
+        jump (offset : number) : void {
+            this.$compiled.jump(offset);
+        }
+
+        *play () : TapeStream<ExecTokens.ExecToken> {
+            let tape    = this.$compiled.play();
+            let library = this.$runtime.library;
+            for (const t of tape) {
+                //console.log("THREADING: ", t);
+                switch (true) {
+                case CompiledTokens.isConstToken(t):
+                    yield ExecTokens.createConstToken(t.literal);
+                    break;
+                case CompiledTokens.isCallToken(t):
+                    let ref = t.wordRef as Literals.WordRef;
+                    if (ref.name == 'INVOKE!') {
+                        yield ExecTokens.createInvokeToken();
+                    }
+                    else {
+                        let word : Words.RuntimeWord | undefined;
+                        if (word = this.$runtime.library.lookup(ref)) {
+                            if (Words.isNativeWord(word)) {
+                                yield ExecTokens.createBuiltinToken(word);
+                            }
+                            else {
+                                yield ExecTokens.createCallToken(word);
+                            }
+                        }
+                        else {
+                            throw new Error(`Could not find word(${ref.name})`);
+                        }
+                    }
+                    break;
+                case CompiledTokens.isMoveToken(t):
+                    let jump = t.jump;
+                    if (jump.conditional) {
+                        yield ExecTokens.createCondToken(jump.offset);
+                    }
+                    else {
+                        yield ExecTokens.createMoveToken(jump.offset);
+                    }
+                    break;
+                default:
+                    throw new Error(`Unrecognized token ${JSON.stringify(t)}`)
+                }
+                //console.log(">>> STACK: ", this.runtime.stack);
+            }
         }
     }
 

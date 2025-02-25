@@ -1,7 +1,8 @@
 
-import { Literals }       from './Literals';
-import { Words }          from './Words';
-import { Library }        from './Library';
+import { Literals }    from './Literals';
+import { Words }       from './Words';
+import { Library }     from './Library';
+import { Tapes }       from './Tapes';
 
 export class Runtime {
     public stack   : Literals.Stack;
