@@ -1,0 +1,40 @@
+// -----------------------------------------------------------------------------
+// Test
+// -----------------------------------------------------------------------------
+
+:: Test::Simple
+
+    $ NUM_TESTS 0 ;
+    $ NUM_FAILS 0 ;
+
+    : ++tests    .NUM_TESTS DUP 1 + >NUM_TESTS ;
+    : ++failure  .NUM_FAILS     1 + >NUM_FAILS ;
+
+    : out  "\n" ~ PRINT! ;
+    : diag "# " SWAP ~ out ;
+
+    : pass
+        "ok " ++tests ~ " - ... " ~ SWAP ~ out
+    ;
+
+    : fail
+        "not ok " ++tests ~ " - ... " ~ SWAP ~ out
+        ++failure
+    ;
+
+    : ok IF pass ELSE fail THEN ;
+    : is == ok ;
+
+    : done-testing
+        "1.." .NUM_TESTS ~ out
+        .NUM_FAILS 0 != IF
+            "# Looks like you failed " .NUM_FAILS ~
+            " test(s) of " .NUM_TESTS ~
+            ~ diag
+        THEN
+    ;
+
+;;
+
+
+"testing if #t is true" #t Test::Simple::ok
