@@ -27,7 +27,7 @@ export class Compiler {
         //console.log("BEGIN WORD: ", name);
         let compiled = this.compileStream(this.compileControlStructures(this.extractWordBody(tokens)));
         //console.log("END WORD: ", name);
-        this.runtime.library.bindToCurrentVolume(Words.createUserWord(name, new Tapes.CompiledTape(compiled)));
+        this.runtime.bindUserWord(name, new Tapes.CompiledTape(compiled));
     }
 
     private extractName (tokens : Tokens.TokenStream) : string {

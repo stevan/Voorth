@@ -20,7 +20,7 @@ function Test013a () {
         5 countdown
     `));
 
-    executor.execute(exe);
+    executor.execute(runtime.link(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -51,7 +51,7 @@ function Test013b () {
         5 countup
     `));
 
-    executor.execute(exe);
+    executor.execute(runtime.link(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

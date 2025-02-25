@@ -16,7 +16,7 @@ function Test011a () {
         greet
     `));
 
-    executor.execute(exe);
+    executor.execute(runtime.link(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);
@@ -36,7 +36,7 @@ function Test011b () {
         "World" greet
     `));
 
-    executor.execute(exe);
+    executor.execute(runtime.link(exe));
 
     //console.log(runtime.dict);
     //console.log(runtime.stack);

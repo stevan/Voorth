@@ -4,28 +4,24 @@ import { Literals }       from './Literals';
 import { Library }        from './Library';
 import { Tapes }          from './Tapes';
 import { VM }             from './VM';
-import { Runtime }        from './Runtime';
 import { CompiledTokens } from './CompiledTokens';
+import { ExecTokens }     from './ExecTokens';
 
 export class Tether {
-    public runtime : Runtime
-    public tapes   : Tapes.CompiledTape[];
+    public tapes : Tapes.ExecutableTape[];
 
-    constructor(r : Runtime, t? : Tapes.CompiledTape) {
-        this.runtime = r;
-        this.tapes   = new Array<Tapes.CompiledTape>();
+    constructor(t? : Tapes.ExecutableTape) {
+        this.tapes = new Array<Tapes.ExecutableTape>();
         if (t) this.tapes.push(t);
     }
 
-    load (t : Tapes.CompiledTape) : void {
+    load (t : Tapes.ExecutableTape) : void {
         this.tapes.push(t);
     }
 
     *stream () : VM.InstructionStream {
-        let library = this.runtime.library;
         while (this.tapes.length) {
-            let compiled = this.tapes.shift() as Tapes.CompiledTape;
-            let tape     = new Tapes.ExecutableTape(compiled, this.runtime);
+            let tape = this.tapes.shift() as Tapes.ExecutableTape;
             for (const t of tape.play()) {
                 switch (true) {
                 case ExecTokens.isConstToken(t):
@@ -36,7 +32,7 @@ export class Tether {
                     break;
                 case ExecTokens.isCallToken(t):
                     let userWord = t.word as Words.UserWord;
-                    yield* (new Tether(this.runtime, userWord.body)).stream();
+                    yield* (new Tether(userWord.body)).stream();
                     break;
                 case ExecTokens.isBuiltinToken(t):
                     let builtinWord = t.word as Words.NativeWord;

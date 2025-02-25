@@ -5,7 +5,7 @@ import { Tapes }   from './Tapes';
 
 export namespace Words {
 
-    export type UserWordBody     = Tapes.CompiledTape;
+    export type UserWordBody     = Tapes.ExecutableTape;
     export type NativeWordBody   = (runtime : Runtime) => void;
 
     export type UserWord     = { type : 'USER',   name : string, body : UserWordBody }

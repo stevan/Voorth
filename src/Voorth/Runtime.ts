@@ -18,6 +18,16 @@ export class Runtime {
         this.library.createVolume('_');
     }
 
+    link (body : Tapes.CompiledTape) : Tapes.ExecutableTape {
+        return new Tapes.ExecutableTape(body, this)
+    }
+
+    bindUserWord (name : string, body : Tapes.CompiledTape) : void {
+        this.library.bindToCurrentVolume(
+            Words.createUserWord(name, this.link(body))
+        );
+    }
+
     private loadBuiltIns () : void {
         const loadBuiltIn = (
             name : string,

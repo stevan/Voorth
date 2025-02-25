@@ -16,21 +16,20 @@ export class Interpreter {
     constructor () {
         this.runtime  = new Runtime();
         this.compiler = new Compiler(this.runtime);
-        this.tether   = new Tether(this.runtime);
+        this.tether   = new Tether();
     }
 
     run (src : string) : void {
         let tape = this.compiler.compile(Tokens.tokenize(src));
-        this.execute(tape);
+        this.execute(this.runtime.link(tape));
     }
 
     send (src : string) : void {
         let tape = this.compiler.compile(Tokens.tokenize(src));
-        this.tether.load(tape);
+        this.tether.load(this.runtime.link(tape));
     }
 
-    execute (compiled : Tapes.CompiledTape) : void {
-        let tape = new Tapes.ExecutableTape(compiled, this.runtime);
+    execute (tape : Tapes.ExecutableTape) : void {
         for (const t of tape.play()) {
             //console.log("EXECUTING: ", t);
             switch (true) {
