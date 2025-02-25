@@ -7,7 +7,6 @@ export namespace Tapes {
 
     export interface Tape<T> {
         jump (offset : number) : void;
-        load (source : T[])    : void;
         play () : TapeStream<T>;
     }
 
@@ -26,7 +25,7 @@ export namespace Tapes {
             this.$tokens.push(...source);
         }
 
-        *play () : CompiledTokens.CompiledStream {
+        *play () : TapeStream<CompiledTokens.CompiledToken> {
             while (this.$index < this.$tokens.length) {
                 let xt = this.$tokens[ this.$index++ ] as CompiledTokens.CompiledToken;
                 yield xt;

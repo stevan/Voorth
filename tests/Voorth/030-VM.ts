@@ -24,6 +24,12 @@ function Test030 () {
     console.log("   STACK: ", vm.stack);
     console.log(" CONTROL: ", vm.control);
 
+    test.is(
+        vm.stack.join(','),
+        'hey,hey,hey,ho,ho,ho',
+        '... got the expected output'
+    );
+
     test.done();
 }
 
