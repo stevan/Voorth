@@ -5,20 +5,28 @@ import { Tapes }          from './Tapes';
 import { Runtime }        from './Runtime';
 import { Compiler }       from './Compiler';
 import { Literals }       from './Literals';
+import { Tether }         from './Tether';
 import { CompiledTokens } from './CompiledTokens';
 
 export class Interpreter {
     public compiler : Compiler;
     public runtime  : Runtime;
+    public tether   : Tether;
 
     constructor () {
         this.runtime  = new Runtime();
         this.compiler = new Compiler(this.runtime);
+        this.tether   = new Tether(this.runtime);
     }
 
     run (src : string) : void {
         let tape = this.compiler.compile(Tokens.tokenize(src));
         this.execute(tape);
+    }
+
+    send (src : string) : void {
+        let tape = this.compiler.compile(Tokens.tokenize(src));
+        this.tether.load(tape);
     }
 
     execute (tape : Tapes.CompiledTape) : void {

@@ -11,6 +11,8 @@ export { Library }     from './Voorth/Library';
 export { Runtime }     from './Voorth/Runtime';
 export { Compiler }    from './Voorth/Compiler';
 export { Interpreter } from './Voorth/Interpreter';
+import { Tether }      from './Voorth/Tether';
+export { VM }          from './Voorth/VM';
 
 // -----------------------------------------------------------------------------
 
