@@ -22,6 +22,11 @@ function Test031a () {
                 'reject','small','medium',
                 'large','extra large','error',
                 10,
+                '<html>',
+                    '<body>',
+                        '<h1>','Hello World','</h1>',
+                    '</body>',
+                '</html>',
             ].join(','),
             '... got the expected output'
         );
@@ -30,6 +35,22 @@ function Test031a () {
     });
 
     i.run(`
+        :: HTML
+            : <html>   "<html>"  ; : </html>  "</html>"  ;
+            : <head>   "<head>"  ; : </head>  "</head>"  ;
+            : <body>   "<body>"  ; : </body>  "</body>"  ;
+
+            : <title>  "<title>" ; : </title> "</title>" ;
+            : <title/> <title> SWAP </title> ;
+
+            : <h1> "<h1>" ; : </h1> "</h1>" ;
+            : <h1/> <h1> SWAP </h1> ;
+
+            : <ul> "<ul>" ; : </ul> "</ul>" ;
+            : <li> "<li>" ; : </li> "</li>" ;
+            : <li/> <li> SWAP </li> ;
+        ;;
+
         : /reduce
             0 DO
                 ROT SWAP RDUP INVOKE!
@@ -81,6 +102,12 @@ function Test031a () {
 
         4 3 2 1
         &+ 0 4 /reduce
+
+        <html>
+            <body>
+                "Hello World" <h1/>
+            </body>
+        </html>
     `);
 
 }
