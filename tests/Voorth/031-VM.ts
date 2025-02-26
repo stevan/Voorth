@@ -37,18 +37,10 @@ function Test031a () {
     i.run(`
         :: HTML
             : <html>   "<html>"  ; : </html>  "</html>"  ;
-            : <head>   "<head>"  ; : </head>  "</head>"  ;
             : <body>   "<body>"  ; : </body>  "</body>"  ;
-
-            : <title>  "<title>" ; : </title> "</title>" ;
-            : <title/> <title> SWAP </title> ;
 
             : <h1> "<h1>" ; : </h1> "</h1>" ;
             : <h1/> <h1> SWAP </h1> ;
-
-            : <ul> "<ul>" ; : </ul> "</ul>" ;
-            : <li> "<li>" ; : </li> "</li>" ;
-            : <li/> <li> SWAP </li> ;
         ;;
 
         : /reduce

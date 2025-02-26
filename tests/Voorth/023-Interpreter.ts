@@ -10,6 +10,9 @@ function Test023a () {
 
     i.run(`
         :: HTML
+            : ---- "!!PUSHMARK!!" ;
+            : ==== BEGIN ~ OVER ---- == UNTIL SWAP DROP ;
+
             : <html>   "<html>"  ; : </html>  "</html>"  ;
             : <head>   "<head>"  ; : </head>  "</head>"  ;
             : <body>   "<body>"  ; : </body>  "</body>"  ;
@@ -25,6 +28,7 @@ function Test023a () {
             : <li/> <li> SWAP </li> ;
         ;;
 
+        ----
         <html>
            <head>
                "Hello World" <title/>
@@ -33,9 +37,10 @@ function Test023a () {
                "Hello HTML!" <h1/>
                 <ul>
                     4 0 DO .R! <li/> LOOP
-                   </ul>
+                </ul>
            </body>
         </html>
+        ====
     `);
 
     let got = i.runtime.stack.toNative();

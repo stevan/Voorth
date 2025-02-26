@@ -4,10 +4,39 @@
 
 - 2DROP, 2SWAP, etc.
 
+```
+import { createServer } from 'node:http';
 
+const server = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello World!\n');
+});
 
+server.listen(3000, '127.0.0.1', () => {
+  console.log('Listening on 127.0.0.1:3000');
+});
+```
 
+```
+: handler
+    200       ~:Status
+    text/html ~:Content-Type
+    ----
+    <html>
+        <head>
+            "Hello World!" <title/>
+        </head>
+        <body>
+            "Hello HTML World!" <h1/>
+        </body>
+    </html>
+    ====
+    ~:body
+;
 
+&handler 127.0.0.1 3000 HTTP.listen
+
+```
 
 
 
