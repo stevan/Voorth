@@ -43,16 +43,18 @@ export namespace VM {
             this.tether  = tether;
         }
 
-        async run () : Promise<ProcessingUnit> {
+        ready () : Promise<ProcessingUnit> {
             return new Promise<ProcessingUnit>((resolved) => {
-                let stream = this.tether.on('ready', () => {
-                    let stream = this.tether.stream();
-                    for (const inst of stream) {
-                        this.execute(inst, stream, this.stack, this.control);
-                    }
-                    resolved(this);
-                })
+                this.tether.on('ready', () => resolved(this.run()))
             });
+        }
+
+        run () : ProcessingUnit {
+            let stream = this.tether.stream();
+            for (const inst of stream) {
+                this.execute(inst, stream, this.stack, this.control);
+            }
+            return this;
         }
 
         execute (
@@ -61,7 +63,7 @@ export namespace VM {
             stack   : Stack,
             control : Control,
         ) : void {
-            console.log("EXECUTE:", inst);
+            //console.log("EXECUTE:", inst);
             switch (true) {
             case isConstant(inst):
                 stack.push(inst.value);
