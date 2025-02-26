@@ -3,6 +3,11 @@ import { Tether } from './Tether';
 
 export namespace VM {
 
+    type interface Tether {
+        on (event : string, handler : Function) : void;
+        stream () : VM.InstructionStream;
+    }
+
     export type BIF =
         | 'DUP'  | 'DROP'
         | 'SWAP' | 'OVER'
