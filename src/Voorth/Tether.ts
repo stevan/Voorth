@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 
 import { Words }          from './Words';
 import { Literals }       from './Literals';
@@ -7,16 +8,18 @@ import { VM }             from './VM';
 import { CompiledTokens } from './CompiledTokens';
 import { ExecTokens }     from './ExecTokens';
 
-export class Tether {
+export class Tether extends EventEmitter {
     public tapes : Tapes.ExecutableTape[];
 
     constructor(t? : Tapes.ExecutableTape) {
+        super();
         this.tapes = new Array<Tapes.ExecutableTape>();
         if (t) this.tapes.push(t);
     }
 
     load (t : Tapes.ExecutableTape) : void {
         this.tapes.push(t);
+        this.emit('ready');
     }
 
     *stream () : VM.InstructionStream {

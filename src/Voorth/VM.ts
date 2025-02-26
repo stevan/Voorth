@@ -43,13 +43,16 @@ export namespace VM {
             this.tether  = tether;
         }
 
-        run () : void {
-            let stream = this.tether.stream();
-            for (const inst of stream) {
-                this.execute(inst, stream, this.stack, this.control);
-            }
-            console.log("  STACK: ", this.stack);
-            console.log("CONTROL: ", this.control);
+        async run () : Promise<ProcessingUnit> {
+            return new Promise<ProcessingUnit>((resolved) => {
+                let stream = this.tether.on('ready', () => {
+                    let stream = this.tether.stream();
+                    for (const inst of stream) {
+                        this.execute(inst, stream, this.stack, this.control);
+                    }
+                    resolved(this);
+                })
+            });
         }
 
         execute (
@@ -193,8 +196,8 @@ export namespace VM {
             default:
                 throw new Error(`Unrecognized instruction ${inst}`);
             }
-            console.log("  STACK: ", stack);
-            console.log("CONTROL: ", control);
+            //console.log("  STACK: ", stack);
+            //console.log("CONTROL: ", control);
         }
     }
 
