@@ -42,8 +42,8 @@ export class Runtime {
         // Debugging
         // =====================================================================
 
-        loadBuiltIn('.SHOW!', (r) => console.log("PEEK:", this.stack.peek()));
-        loadBuiltIn('.DUMP!', (r) => console.log("STACK:", ...this.stack.toArray()));
+        loadBuiltIn('.SHOW!', (_:Runtime) => console.log("PEEK:", this.stack.peek()));
+        loadBuiltIn('.DUMP!', (_:Runtime) => console.log("STACK:", ...this.stack.toArray()));
 
         // =====================================================================
         // Stack Operators
@@ -58,15 +58,15 @@ export class Runtime {
         // OVER  ( b a   -- b a b ) like DUP, but for the 2nd item on the stack
         // ROT   ( c b a -- b a c ) rotate the 3rd item to the top of the stack
 
-        loadBuiltIn('DUP',  (r) => this.stack.dup());
-        loadBuiltIn('DROP', (r) => this.stack.drop());
+        loadBuiltIn('DUP',  (_:Runtime) => this.stack.dup());
+        loadBuiltIn('DROP', (_:Runtime) => this.stack.drop());
 
-        loadBuiltIn('OVER', (r) => this.stack.over());
-        loadBuiltIn('SWAP', (r) => this.stack.swap());
+        loadBuiltIn('OVER', (_:Runtime) => this.stack.over());
+        loadBuiltIn('SWAP', (_:Runtime) => this.stack.swap());
 
-        loadBuiltIn('RDUP', (r) => this.stack.rdup());
-        loadBuiltIn('ROT',  (r) => this.stack.rot());
-        loadBuiltIn('-ROT', (r) => this.stack.rrot());
+        loadBuiltIn('RDUP', (_:Runtime) => this.stack.rdup());
+        loadBuiltIn('ROT',  (_:Runtime) => this.stack.rot());
+        loadBuiltIn('-ROT', (_:Runtime) => this.stack.rrot());
 
         // ---------------------------------------------------------------------
         // Contorl Stack Ops
@@ -77,10 +77,10 @@ export class Runtime {
         // ^R!  (   --   ) (   --   ) drop the top of the control stack
         // ---------------------------------------------------------------------
 
-        loadBuiltIn('>R!', (r) => this.control.push(this.stack.pop()));
-        loadBuiltIn('<R!', (r) => this.stack.push(this.control.pop()));
-        loadBuiltIn('.R!', (r) => this.stack.push(this.control.peek()));
-        loadBuiltIn('^R!', (r) => this.control.drop());
+        loadBuiltIn('>R!', (_:Runtime) => this.control.push(this.stack.pop()));
+        loadBuiltIn('<R!', (_:Runtime) => this.stack.push(this.control.pop()));
+        loadBuiltIn('.R!', (_:Runtime) => this.stack.push(this.control.peek()));
+        loadBuiltIn('^R!', (_:Runtime) => this.control.drop());
 
         // =====================================================================
         // BinOps
@@ -90,7 +90,7 @@ export class Runtime {
         // Strings
         // ---------------------------------------------------------------------
 
-        loadBuiltIn('~', (r) => {
+        loadBuiltIn('~', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Str(lhs.toNative() + rhs.toNative()))
@@ -100,13 +100,13 @@ export class Runtime {
         // Equality
         // ---------------------------------------------------------------------
 
-        loadBuiltIn('==', (r) => {
+        loadBuiltIn('==', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() == rhs.toNative()))
         });
 
-        loadBuiltIn('!=', (r) => {
+        loadBuiltIn('!=', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() != rhs.toNative()))
@@ -116,25 +116,25 @@ export class Runtime {
         // Comparison
         // ---------------------------------------------------------------------
 
-        loadBuiltIn('>', (r) => {
+        loadBuiltIn('>', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() > rhs.toNative()))
         });
 
-        loadBuiltIn('>=', (r) => {
+        loadBuiltIn('>=', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() >= rhs.toNative()))
         });
 
-        loadBuiltIn('<=', (r) => {
+        loadBuiltIn('<=', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() <= rhs.toNative()))
         });
 
-        loadBuiltIn('<', (r) => {
+        loadBuiltIn('<', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Bool(lhs.toNative() < rhs.toNative()))
@@ -144,31 +144,31 @@ export class Runtime {
         // Math Ops
         // ---------------------------------------------------------------------
 
-        loadBuiltIn('+', (r) => {
+        loadBuiltIn('+', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() + rhs.toNative()))
         });
 
-        loadBuiltIn('-', (r) => {
+        loadBuiltIn('-', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() - rhs.toNative()))
         });
 
-        loadBuiltIn('*', (r) => {
+        loadBuiltIn('*', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() * rhs.toNative()))
         });
 
-        loadBuiltIn('/', (r) => {
+        loadBuiltIn('/', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() / rhs.toNative()))
         });
 
-        loadBuiltIn('%', (r) => {
+        loadBuiltIn('%', (_:Runtime) => {
             let rhs = this.stack.pop() as Literals.Literal;
             let lhs = this.stack.pop() as Literals.Literal;
             this.stack.push(new Literals.Num(lhs.toNative() % rhs.toNative()))

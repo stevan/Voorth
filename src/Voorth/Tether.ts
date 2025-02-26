@@ -1,25 +1,30 @@
-import { EventEmitter } from 'events';
-
 import { Words }          from './Words';
 import { Literals }       from './Literals';
-import { Library }        from './Library';
+import { ExecTokens }     from './ExecTokens';
 import { Tapes }          from './Tapes';
 import { VM }             from './VM';
-import { CompiledTokens } from './CompiledTokens';
-import { ExecTokens }     from './ExecTokens';
 
-export class Tether extends EventEmitter {
-    public tapes : Tapes.ExecutableTape[];
+export class Tether implements VM.Tether {
+    public tapes     : Tapes.ExecutableTape[];
+    public to_notify : Function[];
 
     constructor(t? : Tapes.ExecutableTape) {
-        super();
-        this.tapes = new Array<Tapes.ExecutableTape>();
+        this.tapes     = new Array<Tapes.ExecutableTape>();
+        this.to_notify = new Array<Function>();
         if (t) this.tapes.push(t);
     }
 
     load (t : Tapes.ExecutableTape) : void {
         this.tapes.push(t);
-        this.emit('ready');
+        this.ready();
+    }
+
+    onReady (callback : Function) : void {
+        this.to_notify.push(callback);
+    }
+
+    ready () : void {
+        this.to_notify.forEach((f) => f());
     }
 
     *stream () : VM.InstructionStream {

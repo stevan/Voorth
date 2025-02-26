@@ -48,6 +48,8 @@ export namespace Library {
             this.$entries = new Map<string, Words.RuntimeWord>();
         }
 
+        name () : string { return this.$name }
+
         bind (e : Words.RuntimeWord) : void {
             this.$entries.set(e.name, e);
         }

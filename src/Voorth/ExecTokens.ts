@@ -1,6 +1,5 @@
 
 import { Literals } from './Literals';
-import { Tokens }   from './Tokens';
 import { Words }    from './Words';
 
 export namespace ExecTokens {

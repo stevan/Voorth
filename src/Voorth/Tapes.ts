@@ -41,7 +41,7 @@ export namespace Tapes {
     export class ExecutableTape implements Tape<ExecTokens.ExecToken> {
         private $runtime  : Runtime;
         private $compiled : CompiledTape;
-        private $invoke?  : Literals.WordRef;
+        private $invoke?  : Literals.WordRef | undefined;
 
         constructor (compiled : CompiledTape, runtime : Runtime) {
             this.$compiled = compiled;
@@ -75,7 +75,7 @@ export namespace Tapes {
                         }
                     }
                     let word : Words.RuntimeWord | undefined;
-                    if (word = this.$runtime.library.lookup(ref)) {
+                    if (word = library.lookup(ref)) {
                         if (Words.isNativeWord(word)) {
                             yield ExecTokens.createBuiltinToken(word);
                         }

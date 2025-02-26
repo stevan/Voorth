@@ -9,10 +9,10 @@ function Test002 () {
     let coll = new Voorth.Library.Catalog();
     let d   = coll.createVolume("Foo");
 
-    let foo = Voorth.Words.createNativeWord('foo', (r) => {});
+    let foo = Voorth.Words.createNativeWord('foo', (_:Voorth.Runtime) => {});
     d.bind(foo);
 
-    let bar = Voorth.Words.createNativeWord('bar', (r) => {});
+    let bar = Voorth.Words.createNativeWord('bar', (_:Voorth.Runtime) => {});
     d.bind(bar);
 
     test.ok(d.lookup(new Voorth.Literals.WordRef('foo')) != undefined, '... we have the foo entry');

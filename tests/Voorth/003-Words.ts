@@ -8,11 +8,11 @@ function Test003 () {
 
     let out : string[] = [];
 
-    let w1 = Voorth.Words.createNativeWord('HELLO', (r : Voorth.Runtime) => {
+    let w1 = Voorth.Words.createNativeWord('HELLO', (_:Voorth.Runtime) => {
         out.push('Hello');
     });
 
-    let w2 = Voorth.Words.createNativeWord('WORLD', (r : Voorth.Runtime) => {
+    let w2 = Voorth.Words.createNativeWord('WORLD', (_:Voorth.Runtime) => {
         out.push('World!');
     });
 

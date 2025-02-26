@@ -1,12 +1,5 @@
 
-import { Tether } from './Tether';
-
 export namespace VM {
-
-    type interface Tether {
-        on (event : string, handler : Function) : void;
-        stream () : VM.InstructionStream;
-    }
 
     export type BIF =
         | 'DUP'  | 'DROP'
@@ -37,6 +30,11 @@ export namespace VM {
     export function isOperator (i : Instruction) : i is Operator { return i.type == 'OP' }
     export function isConstant (i : Instruction) : i is Constant { return i.type == 'CONST' }
 
+    export interface Tether {
+        onReady (f : () => void) : void;
+        stream  ()               : InstructionStream;
+    }
+
     export class ProcessingUnit {
         public stack    : Stack;
         public control  : Control;
@@ -50,7 +48,7 @@ export namespace VM {
 
         ready () : Promise<ProcessingUnit> {
             return new Promise<ProcessingUnit>((resolved) => {
-                this.tether.on('ready', () => resolved(this.run()))
+                this.tether.onReady(() => resolved(this.run()));
             });
         }
 
