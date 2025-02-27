@@ -79,6 +79,18 @@ export namespace Literals {
         if (!(l instanceof WordRef)) throw new Error(`Not WordRef (${JSON.stringify(l)})`)
     }
 
+    export class JSValue implements Literal {
+        constructor(public value : any) {}
+        toNum    () : number  { return Number(this.value) }
+        toBool   () : boolean { return !!(this.value) }
+        toStr    () : string  { return this.value.toString() }
+        toNative () : any { return this.value }
+    }
+
+    export function assertJSValue (l : Literal) : asserts l is JSValue {
+        if (!(l instanceof JSValue)) throw new Error(`Not JSValue (${JSON.stringify(l)})`)
+    }
+
     // -------------------------------------------------------------------------
     // Containers
     // -------------------------------------------------------------------------
