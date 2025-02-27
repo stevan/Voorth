@@ -9,20 +9,23 @@ export namespace Logger {
     }
 
     export const LOG_LABELS : string[] = [
-        ".o(INFO) : ",
-        "^^[WARN] : ",
-        "!{ERROR} : ",
-        "?<DEBUG> : ",
+        ".o(INFO)",
+        "^^[WARN]",
+        "!{ERROR}",
+        "?<DEBUG>",
     ];
 
-    const ESC   = '\u001B[';
-    const RESET = ESC + "0m";
+    const ESC       = '\u001B[';
+    const RESET     = ESC + '0m';
+    const LT_GRAY   = ESC + '38;2;200;200;200;m';
+    const DK_GRAY   = ESC + '38;2;125;125;125;m';
+    const MSG_COLOR = ESC + '38;2;150;200;255;m';
 
     export const LOG_COLORS : string[] = [
-        ESC + "96m",
-        ESC + "93m",
-        ESC + "91m",
-        ESC + "92m",
+        ESC + '96m',
+        ESC + '93m',
+        ESC + '91m',
+        ESC + '92m',
     ];
 
     export const DEBUG     : string = process.env['DEBUG'] ?? '';
@@ -48,22 +51,32 @@ export namespace Logger {
             });
             if (LOG_LEVEL > Level.DEBUG) {
                 stackDepth = lines.length;
-                stackTrace = lines.map((line) => {
-                    return " ".repeat(stackDepth)
-                         + "      -> : "
-                         + line
-                }).join("\n") + "\n";
+                stackTrace = DK_GRAY;
+                for (let i = 0; i < lines.length; i++) {
+                    stackTrace += " ".repeat(stackDepth + 9);
+                    if (i == 0) {
+                        stackTrace += "╰┬─▶ ";
+                    } else if (i == lines.length - 1) {
+                        stackTrace += " ╰─▶ ";
+                    } else {
+                        stackTrace += " ├─▶ ";
+                    }
+                    stackTrace += lines[i] + "\n";
+                }
             }
         }
 
         process.stderr.write(
-            ".".repeat(stackDepth)
-            + LOG_COLORS[level - 1] as string
-            + LOG_LABELS[level - 1] as string
-            + msgs.join(' ')
-            + RESET
+            LT_GRAY
+            + "◦".repeat(stackDepth)
+                + LOG_COLORS[level - 1] as string
+                + LOG_LABELS[level - 1] as string
+                + ((stackDepth) ? DK_GRAY + '─╮ ' : ' │ ')
+                + MSG_COLOR
+                + msgs.map((m) => JSON.stringify(m)).join(' ')
             + "\n"
             + stackTrace
+            + RESET
         );
     }
 
