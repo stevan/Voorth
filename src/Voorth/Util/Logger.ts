@@ -9,10 +9,10 @@ export namespace Logger {
     }
 
     export const LOG_LABELS : string[] = [
-        ".o(INFO) :",
-        "^^[WARN] :",
-        "!{ERROR} :",
-        "?<DEBUG> :",
+        ".o(INFO) : ",
+        "^^[WARN] : ",
+        "!{ERROR} : ",
+        "?<DEBUG> : ",
     ];
 
     const ESC   = '\u001B[';
@@ -46,8 +46,8 @@ export namespace Logger {
                     line.indexOf('node:internal') == -1
                 );
             });
-            stackDepth = lines.length;
             if (LOG_LEVEL > Level.DEBUG) {
+                stackDepth = lines.length;
                 stackTrace = lines.map((line) => {
                     return " ".repeat(stackDepth)
                          + "      -> : "
