@@ -23,7 +23,6 @@ export namespace Words {
         return { type : 'NATIVE', name : n, body : b } as NativeWord
     }
 
-
     export function isUserWord     (w : Word) : w is UserWord     { return w.type == 'USER'     }
     export function isNativeWord   (w : Word) : w is NativeWord   { return w.type == 'NATIVE'   }
     export function isRuntimeWord  (w : Word) : w is RuntimeWord  { return isNativeWord(w) || isUserWord(w) }
