@@ -1,4 +1,5 @@
 
+import { DEBUG, LOG }     from './Util/Logger';
 import { Tokens }         from './Tokens';
 import { Literals }       from './Literals';
 import { CompiledTokens } from './CompiledTokens';
@@ -23,9 +24,9 @@ export class Compiler {
 
     compileWord (tokens : Tokens.TokenStream) : void {
         let name = this.extractName(tokens);
-        //console.log("BEGIN WORD: ", name);
+        //LOG(DEBUG, "BEGIN WORD: ", name);
         let compiled = this.compileStream(this.compileControlStructures(this.extractWordBody(tokens)));
-        //console.log("END WORD: ", name);
+        //LOG(DEBUG, "END WORD: ", name);
         this.runtime.bindUserWord(name, new Tapes.CompiledTape(compiled));
     }
 
@@ -52,6 +53,7 @@ export class Compiler {
 
     private *compileStream (tokens : Tokens.TokenStream) : CompiledTokens.CompiledStream {
         for (const token of tokens) {
+            LOG(DEBUG, "COMPILING // STREAM", token);
             if (Tokens.isLiteralToken(token)) {
                 switch (true) {
                 case Tokens.isNumberToken(token):
@@ -83,12 +85,14 @@ export class Compiler {
                 throw new Error(`Unrecognized (??) token (${JSON.stringify(token)})`);
             }
         }
+        LOG(DEBUG, "COMPILING // STREAM !DONE");
     }
 
     // -------------------------------------------------------------------------
 
     private *compileWordDefinitions (tokens : Tokens.TokenStream) : Tokens.TokenStream {
         for (const token of tokens) {
+            LOG(DEBUG, "COMPILING // WORD DEFINITIONS", token);
             if (Tokens.isWordToken(token)) {
 
                 if (token.value == '::') {
@@ -109,12 +113,14 @@ export class Compiler {
             }
             yield token;
         }
+        LOG(DEBUG, "COMPILING // WORD DEFINITIONS !DONE");
     }
 
     private *compileControlStructures (tokens : Tokens.TokenStream) : Tokens.TokenStream {
         let index : number = 0;
         let jumps : Tokens.JumpToken[] = [];
         for (const t of tokens) {
+            LOG(DEBUG, "COMPILING // CONTROL STRUCTURES", t);
             if (Tokens.isWordToken(t)) {
                 // -------------------------------------------------------------
                 // Conditionals
@@ -207,6 +213,7 @@ export class Compiler {
                 yield t;
             }
         }
+        LOG(DEBUG, "COMPILING // CONTROL STRUCTURES !DONE");
     }
 
 }

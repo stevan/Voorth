@@ -1,4 +1,6 @@
 
+import { DEBUG, LOG } from './Util/Logger';
+
 export namespace VM {
 
     export type BIF =
@@ -53,10 +55,12 @@ export namespace VM {
         }
 
         run () : ProcessingUnit {
+            LOG(DEBUG, "VM // RUN");
             let stream = this.tether.stream();
             for (const inst of stream) {
                 this.execute(inst, stream, this.stack, this.control);
             }
+            LOG(DEBUG, "VM // RUN !DONE");
             return this;
         }
 
@@ -66,7 +70,7 @@ export namespace VM {
             stack   : Stack,
             control : Control,
         ) : void {
-            //console.log("EXECUTE:", inst);
+            LOG(DEBUG, "VM // EXECUTE", inst);
             switch (true) {
             case isConstant(inst):
                 stack.push(inst.value);
@@ -201,8 +205,9 @@ export namespace VM {
             default:
                 throw new Error(`Unrecognized instruction ${inst}`);
             }
-            //console.log("  STACK: ", stack);
-            //console.log("CONTROL: ", control);
+            //Logger.LOG("  STACK: ", stack);
+            //Logger.LOG("CONTROL: ", control);
+            LOG(DEBUG, "VM // EXECUTE !DONE");
         }
     }
 

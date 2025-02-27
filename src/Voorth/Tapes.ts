@@ -1,4 +1,5 @@
 
+import { DEBUG, LOG }     from './Util/Logger';
 import { Words }          from './Words';
 import { Literals }       from './Literals';
 import { Runtime }        from './Runtime';
@@ -32,8 +33,10 @@ export namespace Tapes {
         *play () : TapeStream<CompiledTokens.CompiledToken> {
             while (this.$index < this.$tokens.length) {
                 let ct = this.$tokens[ this.$index++ ] as CompiledTokens.CompiledToken;
+                LOG(DEBUG, "TAPE // COMPILED", ct);
                 yield ct;
             }
+            LOG(DEBUG, "TAPE // COMPILED !DONE");
             this.$index = 0;
         }
     }
@@ -60,7 +63,7 @@ export namespace Tapes {
             let tape    = this.$compiled.play();
             let library = this.$runtime.library;
             for (const t of tape) {
-                //console.log("THREADING: ", t);
+                LOG(DEBUG, "TAPE // THREADING: ", t);
                 switch (true) {
                 case CompiledTokens.isConstToken(t):
                     yield ExecTokens.createConstToken(t.literal);
@@ -99,8 +102,9 @@ export namespace Tapes {
                 default:
                     throw new Error(`Unrecognized token ${JSON.stringify(t)}`)
                 }
-                //console.log(">>> STACK: ", this.runtime.stack);
+                //LOG(DEBUG, ">>> STACK: ", this.runtime.stack);
             }
+            LOG(DEBUG, "TAPE // THREADING !DONE");
         }
     }
 

@@ -1,8 +1,10 @@
-import { Words }          from './Words';
-import { Literals }       from './Literals';
-import { ExecTokens }     from './ExecTokens';
-import { Tapes }          from './Tapes';
-import { VM }             from './VM';
+
+import { DEBUG, LOG } from './Util/Logger';
+import { Words }      from './Words';
+import { Literals }   from './Literals';
+import { ExecTokens } from './ExecTokens';
+import { Tapes }      from './Tapes';
+import { VM }         from './VM';
 
 export class Tether implements VM.Tether {
     public tapes     : Tapes.ExecutableTape[];
@@ -30,7 +32,9 @@ export class Tether implements VM.Tether {
     *stream () : VM.InstructionStream {
         while (this.tapes.length) {
             let tape = this.tapes.shift() as Tapes.ExecutableTape;
+            LOG(DEBUG, "TETHER // STREAM // >START", tape);
             for (const t of tape.play()) {
+                LOG(DEBUG, "TETHER // STREAM // PLAY", t);
                 switch (true) {
                 case ExecTokens.isConstToken(t):
                     yield { type : 'CONST', value : t.literal.toNative() as VM.Literal };
@@ -63,6 +67,8 @@ export class Tether implements VM.Tether {
                     throw new Error(`Unrecognized token ${JSON.stringify(t)}`)
                 }
             }
+            LOG(DEBUG, "TETHER // STREAM // >END", tape);
         }
+        LOG(DEBUG, "TETHER // STREAM !DONE");
     }
 }

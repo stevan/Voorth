@@ -1,4 +1,6 @@
 
+import { DEBUG, LOG } from './Util/Logger';
+
 export namespace Tokens {
 
     export type NumberToken  = { type : 'NUMBER',  value : string }
@@ -50,6 +52,7 @@ export namespace Tokens {
         let match;
         while ((match = SPLITTER.exec(src)) !== null) {
             let m = match[0] as string;
+            LOG(DEBUG, "TOKENIZING", m);
             switch (true) {
             case IS_COMMENT.test(m):
                 if (includeComments) {
@@ -72,6 +75,7 @@ export namespace Tokens {
                 throw new Error(`Unrecognized match ${m}`);
             }
         }
+        LOG(DEBUG, "TOKENIZING !DONE");
     }
 
 }

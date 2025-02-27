@@ -2,6 +2,8 @@
 // Voorth
 // -----------------------------------------------------------------------------
 
+export { Logger }         from './Voorth/Util/Logger';
+
 export { Tokens }         from './Voorth/Tokens';
 export { Literals }       from './Voorth/Literals';
 export { Words }          from './Voorth/Words';

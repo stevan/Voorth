@@ -1,4 +1,5 @@
 
+import { INFO, LOG }   from './Util/Logger';
 import { Literals }    from './Literals';
 import { Words }       from './Words';
 import { Library }     from './Library';
@@ -42,8 +43,8 @@ export class Runtime {
         // Debugging
         // =====================================================================
 
-        loadBuiltIn('.SHOW!', (_:Runtime) => console.log("PEEK:", this.stack.peek()));
-        loadBuiltIn('.DUMP!', (_:Runtime) => console.log("STACK:", ...this.stack.toArray()));
+        loadBuiltIn('.SHOW!', (_:Runtime) => LOG(INFO, "PEEK:", this.stack.peek()));
+        loadBuiltIn('.DUMP!', (_:Runtime) => LOG(INFO, "STACK:", ...this.stack.toArray()));
 
         // =====================================================================
         // Stack Operators

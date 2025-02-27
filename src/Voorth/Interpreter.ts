@@ -1,4 +1,5 @@
 
+import { DEBUG, LOG } from './Util/Logger';
 import { Tokens }     from './Tokens';
 import { Words }      from './Words';
 import { Tapes }      from './Tapes';
@@ -20,18 +21,26 @@ export class Interpreter {
     }
 
     run (src : string) : void {
+        LOG(DEBUG, "INTERPRETER // RUN // COMPILE");
         let tape = this.compiler.compile(Tokens.tokenize(src));
+        LOG(DEBUG, "INTERPRETER // RUN // COMPILE !DONE");
+        LOG(DEBUG, "INTERPRETER // RUN // EXECUTE");
         this.execute(this.runtime.link(tape));
+        LOG(DEBUG, "INTERPRETER // RUN // EXECUTE !DONE");
     }
 
     send (src : string) : void {
+        LOG(DEBUG, "INTERPRETER // SEND // COMPILE");
         let tape = this.compiler.compile(Tokens.tokenize(src));
+        LOG(DEBUG, "INTERPRETER // SEND // COMPILE !DONE");
+        LOG(DEBUG, "INTERPRETER // SEND // LOAD");
         this.tether.load(this.runtime.link(tape));
+        LOG(DEBUG, "INTERPRETER // SEND // LOAD !DONE");
     }
 
     execute (tape : Tapes.ExecutableTape) : void {
         for (const t of tape.play()) {
-            //console.log("EXECUTING: ", t);
+            LOG(DEBUG, "INTERPRETER // EXECUTING", t);
             switch (true) {
             case ExecTokens.isConstToken(t):
                 this.runtime.stack.push(t.literal)
@@ -60,8 +69,9 @@ export class Interpreter {
             default:
                 throw new Error(`Unrecognized token ${JSON.stringify(t)}`)
             }
-            //console.log(">>> STACK: ", this.runtime.stack);
+            //LOG(DEBUG, ">>> STACK: ", this.runtime.stack);
         }
+        LOG(DEBUG, "INTERPRETER // EXECUTING !DONE");
     }
 
 }
