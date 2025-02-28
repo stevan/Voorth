@@ -17,6 +17,7 @@ export class Tether implements VM.Tether {
     }
 
     load (t : Tapes.ExecutableTape) : void {
+        LOG(DEBUG, "TETHER // LOAD", t);
         this.tapes.push(t);
         this.ready();
     }
@@ -26,10 +27,13 @@ export class Tether implements VM.Tether {
     }
 
     ready () : void {
+        LOG(DEBUG, "TETHER // READY // NOTIFY");
         this.to_notify.forEach((f) => f());
+        LOG(DEBUG, "TETHER // READY // NOTIFIED");
     }
 
-    *stream () : VM.InstructionStream {
+    async *stream () : VM.InstructionStream {
+        LOG(DEBUG, "TETHER // STREAM");
         while (this.tapes.length) {
             let tape = this.tapes.shift() as Tapes.ExecutableTape;
             LOG(DEBUG, "TETHER // STREAM // >START", tape);
@@ -40,7 +44,7 @@ export class Tether implements VM.Tether {
                     yield this.createConst(t.literal);
                     break;
                 case ExecTokens.isInvokeToken(t):
-                    let callResp = yield this.createChannelRequest('CALL?');
+                    const callResp = yield this.createChannelRequest('CALL?');
                     this.assertChannelResponse(callResp);
                     let name = callResp.value as string;
                     if (name.indexOf('&') != 0) throw new Error(`Not a word ref string ${name}`);
@@ -57,7 +61,7 @@ export class Tether implements VM.Tether {
                     yield this.createOp(builtinWord.name as VM.BIF);
                     break;
                 case ExecTokens.isCondToken(t):
-                    let jumpResp = yield this.createChannelRequest('JUMP?');
+                    const jumpResp = yield this.createChannelRequest('JUMP?');
                     this.assertChannelResponse(jumpResp);
                     let cond = jumpResp.value as boolean;
                     if (!cond) tape.jump(t.offset);
@@ -80,15 +84,21 @@ export class Tether implements VM.Tether {
         if (!r || r.type != 'CRES') throw new Error(`Not ChannelResponse ${JSON.stringify(r)}`)
     }
 
-    private createConst (l : Literals.Literal) : VM.Constant {
-        return { type : 'CONST', value : l.toNative() as VM.Literal } as VM.Constant
+    private createConst (l : Literals.Literal) : Promise<VM.Constant> {
+        return new Promise<VM.Constant>((r) =>
+            r({ type : 'CONST', value : l.toNative() as VM.Literal } as VM.Constant)
+        );
     }
 
-    private createOp (op : string) : VM.Operator {
-        return { type : 'OP', bif : op as VM.BIF } as VM.Operator
+    private createOp (op : string) : Promise<VM.Operator> {
+        return new Promise<VM.Operator>((r) =>
+            r({ type : 'OP', bif : op as VM.BIF } as VM.Operator)
+        );
     }
 
-    private createChannelRequest (op : string) : VM.ChannelRequest {
-        return { type : 'CREQ', op : op as VM.ChannelRequestOp } as VM.ChannelRequest
+    private createChannelRequest (op : string) : Promise<VM.ChannelRequest> {
+        return new Promise<VM.ChannelRequest>((r) =>
+            r({ type : 'CREQ', op : op as VM.ChannelRequestOp } as VM.ChannelRequest)
+        );
     }
 }

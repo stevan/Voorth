@@ -33,7 +33,7 @@ export namespace VM {
     export type ChannelResponse = { type : 'CRES',  op : ChannelResponseOp, value : Literal };
 
     export type Instruction       = Operator | Constant | ChannelRequest;
-    export type InstructionStream = Generator<Instruction, void, ChannelResponse | undefined>;
+    export type InstructionStream = AsyncGenerator<Instruction, void, ChannelResponse | undefined>;
 
     export type Stack   = Literal[];
     export type Control = Literal[];
@@ -59,29 +59,40 @@ export namespace VM {
         }
 
         ready () : Promise<ProcessingUnit> {
+            LOG(DEBUG, "VM // READY ...");
             return new Promise<ProcessingUnit>((resolved) => {
-                this.tether.onReady(() => resolved(this.run()));
+                this.tether.onReady(() => {
+                    LOG(DEBUG, "VM // READY // RUN !START");
+                    resolved(this.run());
+                    //LOG(DEBUG, "VM // READY // RUN !DONE");
+                });
             });
         }
 
-        run () : ProcessingUnit {
+        async run () : Promise<ProcessingUnit> {
             LOG(DEBUG, "VM // RUN");
             let stream = this.tether.stream();
-            for (const inst of stream) {
-                this.execute(inst, stream, this.stack, this.control);
+            for await (const inst of stream) {
+                this.execute(inst, stream);
             }
             LOG(DEBUG, "VM // RUN !DONE");
             return this;
         }
 
+        private createChannelResponse(op : ChannelResponseOp, value : Literal) : ChannelResponse {
+            //return new Promise<ChannelResponse>((r) => r(
+            return { type : 'CRES', op : op, value : value } as ChannelResponse
+            //));
+        }
+
         execute (
             inst    : Instruction,
             stream  : InstructionStream,
-            stack   : Stack,
-            control : Control,
         ) : void {
             LOG(DEBUG, "VM // EXECUTE", inst);
             let rhs, lhs, x, y, z;
+            let stack   = this.stack;
+            let control = this.control;
             switch (true) {
             case isConstant(inst):
                 stack.push(inst.value);
@@ -90,11 +101,11 @@ export namespace VM {
                 switch (inst.op) {
                 case 'JUMP?':
                     x = stack.pop() as Literal;
-                    stream.next({ type : 'CRES', op : 'JUMP!', value : x });
+                    stream.next(this.createChannelResponse('JUMP!', x));
                     break;
                 case 'CALL?':
                     x = stack.pop() as Literal;
-                    stream.next({ type : 'CRES', op : 'CALL!', value : x });
+                    stream.next(this.createChannelResponse('CALL!', x));
                     break;
                 default:
                     throw new Error(`Unrecognized channel request ${inst}`);

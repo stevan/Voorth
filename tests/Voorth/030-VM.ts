@@ -6,10 +6,20 @@ import * as Voorth from '../../src/Voorth'
 function Test030 () {
     let test = new Test.Simple();
 
-    let i  = new Voorth.Interpreter();
-    let vm = new Voorth.VM.ProcessingUnit(i.tether);
+    let i   = new Voorth.Interpreter();
+    let vm  = new Voorth.VM.ProcessingUnit(i.tether);
+    let exe = vm.ready();
 
-    vm.ready().then((vm) => {
+
+    i.run(': dup3 2 0 DO DUP LOOP ;');
+    i.send('"hey" dup3');
+
+    exe.then(() => {
+        i.send(`
+            "ho" dup3
+            10 1 + 20 &+ INVOKE!
+        `);
+    }).then(() => {
         //console.log("   STACK: ", vm.stack);
         //console.log(" CONTROL: ", vm.control);
 
@@ -21,18 +31,6 @@ function Test030 () {
 
         test.done();
     });
-
-    //console.log("compile locally")
-    i.run(': dup3 2 0 DO DUP LOOP ;');
-    //console.log("send code to run")
-    i.send('"hey" dup3');
-    //console.log("send code to run (again)")
-    i.send(`
-        "ho" dup3
-
-        10 1 + 20 &+ INVOKE!
-    `);
-    //console.log("all done here ...")
 }
 
 Test030();
