@@ -12,25 +12,35 @@ export namespace VM {
         | '<'    | '<='   | '>'   | '>='
         | '~'
         | '>R!'  | '<R!'  | '.R!' | '^R!'
+        | 'NOOP'
+    ;
+
+    export type ChannelRequestOp =
         | 'JUMP?'
         | 'CALL?'
-        | 'NOOP'
+    ;
+
+    export type ChannelResponseOp =
+        | 'JUMP!'
+        | 'CALL!'
     ;
 
     export type Literal = number | string | boolean;
 
-    export type Operator = { type : 'OP',    value : BIF };
-    export type Constant = { type : 'CONST', value : Literal };
+    export type Operator        = { type : 'OP',    bif : BIF };
+    export type Constant        = { type : 'CONST', value : Literal };
+    export type ChannelRequest  = { type : 'CREQ',  op : ChannelRequestOp };
+    export type ChannelResponse = { type : 'CRES',  op : ChannelResponseOp, value : Literal };
 
-    export type Instruction = Operator | Constant;
-
-    export type InstructionStream = Generator<Instruction, void, any>;
+    export type Instruction       = Operator | Constant | ChannelRequest;
+    export type InstructionStream = Generator<Instruction, void, ChannelResponse | undefined>;
 
     export type Stack   = Literal[];
     export type Control = Literal[];
 
-    export function isOperator (i : Instruction) : i is Operator { return i.type == 'OP' }
-    export function isConstant (i : Instruction) : i is Constant { return i.type == 'CONST' }
+    export function isOperator       (i : Instruction) : i is Operator       { return i.type == 'OP' }
+    export function isConstant       (i : Instruction) : i is Constant       { return i.type == 'CONST' }
+    export function isChannelRequest (i : Instruction) : i is ChannelRequest { return i.type == 'CREQ' }
 
     export interface Tether {
         onReady (f : () => void) : void;
@@ -71,21 +81,27 @@ export namespace VM {
             control : Control,
         ) : void {
             LOG(DEBUG, "VM // EXECUTE", inst);
+            let rhs, lhs, x, y, z;
             switch (true) {
             case isConstant(inst):
                 stack.push(inst.value);
                 break;
-            case isOperator(inst):
-                let rhs, lhs, x, y, z;
-                switch (inst.value) {
+            case isChannelRequest(inst):
+                switch (inst.op) {
                 case 'JUMP?':
                     x = stack.pop() as Literal;
-                    stream.next(x);
+                    stream.next({ type : 'CRES', op : 'JUMP!', value : x });
                     break;
                 case 'CALL?':
                     x = stack.pop() as Literal;
-                    stream.next(x);
+                    stream.next({ type : 'CRES', op : 'CALL!', value : x });
                     break;
+                default:
+                    throw new Error(`Unrecognized channel request ${inst}`);
+                }
+                break;
+            case isOperator(inst):
+                switch (inst.bif) {
                 // stack
                 case 'DROP':
                     stack.pop();

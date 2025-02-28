@@ -37,14 +37,16 @@ export class Tether implements VM.Tether {
                 LOG(DEBUG, "TETHER // STREAM // PLAY", t);
                 switch (true) {
                 case ExecTokens.isConstToken(t):
-                    yield { type : 'CONST', value : t.literal.toNative() as VM.Literal };
+                    yield this.createConst(t.literal);
                     break;
                 case ExecTokens.isInvokeToken(t):
-                    let name : string = yield { type : 'OP', value : 'CALL?' };
+                    let callResp = yield this.createChannelRequest('CALL?');
+                    this.assertChannelResponse(callResp);
+                    let name = callResp.value as string;
                     if (name.indexOf('&') != 0) throw new Error(`Not a word ref string ${name}`);
                     tape.invoke(new Literals.WordRef(name.slice(1)));
                     // send NOOP instruction that can be ignored
-                    yield { type : 'OP', value : 'NOOP' };
+                    yield this.createOp('NOOP');
                     break;
                 case ExecTokens.isCallToken(t):
                     let userWord = t.word as Words.UserWord;
@@ -52,13 +54,15 @@ export class Tether implements VM.Tether {
                     break;
                 case ExecTokens.isBuiltinToken(t):
                     let builtinWord = t.word as Words.NativeWord;
-                    yield { type : 'OP', value : builtinWord.name as VM.BIF };
+                    yield this.createOp(builtinWord.name as VM.BIF);
                     break;
                 case ExecTokens.isCondToken(t):
-                    let cond = yield { type : 'OP', value : 'JUMP?' };
+                    let jumpResp = yield this.createChannelRequest('JUMP?');
+                    this.assertChannelResponse(jumpResp);
+                    let cond = jumpResp.value as boolean;
                     if (!cond) tape.jump(t.offset);
                     // send NOOP instruction that can be ignored
-                    yield { type : 'OP', value : 'NOOP' };
+                    yield this.createOp('NOOP');
                     break;
                 case ExecTokens.isMoveToken(t):
                     tape.jump(t.offset);
@@ -70,5 +74,21 @@ export class Tether implements VM.Tether {
             LOG(DEBUG, "TETHER // STREAM // >END", tape);
         }
         LOG(DEBUG, "TETHER // STREAM !DONE");
+    }
+
+    private assertChannelResponse (r : VM.ChannelResponse | undefined) : asserts r is VM.ChannelResponse {
+        if (!r || r.type != 'CRES') throw new Error(`Not ChannelResponse ${JSON.stringify(r)}`)
+    }
+
+    private createConst (l : Literals.Literal) : VM.Constant {
+        return { type : 'CONST', value : l.toNative() as VM.Literal } as VM.Constant
+    }
+
+    private createOp (op : string) : VM.Operator {
+        return { type : 'OP', bif : op as VM.BIF } as VM.Operator
+    }
+
+    private createChannelRequest (op : string) : VM.ChannelRequest {
+        return { type : 'CREQ', op : op as VM.ChannelRequestOp } as VM.ChannelRequest
     }
 }
