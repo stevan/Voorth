@@ -28,6 +28,38 @@ export namespace Logger {
         ESC + '92m',
     ];
 
+    const ColorMap = new Map<string, string>();
+
+    function fetchColorFor(name : string) : string {
+        if (!ColorMap.has(name)) {
+            ColorMap.set(name,
+                ESC + '38;2;' + [
+                    Math.trunc(Math.random() * 100),
+                    Math.trunc(Math.random() * 100),
+                    Math.trunc(Math.random() * 100),
+                ].map((c) => c + 150)
+                 .join(';') + ';m'
+            );
+        }
+        return ColorMap.get(name) as string;
+    }
+
+    function colorizeMessage (msg : any) : string {
+        if (typeof msg === 'string') {
+            let match = msg.match(/^(\S+)/);
+            if (match) {
+                let m = match[0] as string;
+                let c = fetchColorFor(m);
+                return c + msg;
+            }
+            else {
+                return msg;
+            }
+        } else {
+            return JSON.stringify(msg);
+        }
+    }
+
     export const DEBUG     : string = process.env['DEBUG'] ?? '';
     export const LOG_LEVEL : number = DEBUG ? parseInt(DEBUG) : 0;
 
@@ -73,7 +105,7 @@ export namespace Logger {
                 + LOG_LABELS[level - 1] as string
                 + ((stackDepth) ? DK_GRAY + '─╮ ' : ' │ ')
                 + MSG_COLOR
-                + msgs.map((m) => JSON.stringify(m)).join(' ')
+                + msgs.map((m) => colorizeMessage(m)).join(' ')
             + "\n"
             + stackTrace
             + RESET
