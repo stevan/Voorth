@@ -6,36 +6,29 @@ import { Tapes }      from './Tapes';
 import { Runtime }    from './Runtime';
 import { Compiler }   from './Compiler';
 import { Literals }   from './Literals';
-import { Tether }     from './Tether';
 import { ExecTokens } from './ExecTokens';
 
 export class Interpreter {
     public compiler : Compiler;
     public runtime  : Runtime;
-    public tether   : Tether;
 
     constructor () {
         this.runtime  = new Runtime();
         this.compiler = new Compiler(this.runtime);
-        this.tether   = new Tether();
     }
 
     run (src : string) : void {
-        LOG(DEBUG, "INTERPRETER // RUN // COMPILE");
-        let tape = this.compiler.compile(Tokens.tokenize(src));
-        LOG(DEBUG, "INTERPRETER // RUN // COMPILE !DONE");
+        let tape = this.compile(src);
         LOG(DEBUG, "INTERPRETER // RUN // EXECUTE");
-        this.execute(this.runtime.link(tape));
+        this.execute(tape);
         LOG(DEBUG, "INTERPRETER // RUN // EXECUTE !DONE");
     }
 
-    send (src : string) : void {
-        LOG(DEBUG, "INTERPRETER // SEND // COMPILE");
+    compile (src : string) : Tapes.ExecutableTape {
+        LOG(DEBUG, "INTERPRETER // RUN // COMPILE");
         let tape = this.compiler.compile(Tokens.tokenize(src));
-        LOG(DEBUG, "INTERPRETER // SEND // COMPILE !DONE");
-        LOG(DEBUG, "INTERPRETER // SEND // LOAD");
-        this.tether.load(this.runtime.link(tape));
-        LOG(DEBUG, "INTERPRETER // SEND // LOAD !DONE");
+        LOG(DEBUG, "INTERPRETER // RUN // COMPILE !DONE");
+        return this.runtime.link(tape);
     }
 
     execute (tape : Tapes.ExecutableTape) : void {

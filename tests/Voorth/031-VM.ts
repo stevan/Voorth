@@ -6,8 +6,9 @@ import * as Voorth from '../../src/Voorth'
 function Test031a () {
     let test = new Test.Simple();
 
-    let i  = new Voorth.Interpreter();
-    let vm = new Voorth.VM.ProcessingUnit(i.tether);
+    let t   = new Voorth.Tether();
+    let i   = new Voorth.Interpreter();
+    let vm  = new Voorth.VM.ProcessingUnit(t);
 
     vm.ready().then((vm) => {
         console.log("   STACK: ", vm.stack);
@@ -80,7 +81,7 @@ function Test031a () {
         ;
     `);
 
-    i.send(`
+    t.load(i.compile(`
         5 countdown1
         5 countdown2
         5 countdown3
@@ -100,7 +101,7 @@ function Test031a () {
                 "Hello World" <h1/>
             </body>
         </html>
-    `);
+    `));
 
 }
 

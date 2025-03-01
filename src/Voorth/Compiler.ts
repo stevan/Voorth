@@ -126,7 +126,7 @@ export class Compiler {
                 // Conditionals
                 // -------------------------------------------------------------
                 if (t.value == 'IF') {
-                    let jump = Tokens.createJumpToken( index += 1, true );
+                    let jump = Tokens.createConditionalJumpToken( index += 1, { synthetized : 'IF' } );
                     jumps.push(jump);
                     yield jump;
                 }
@@ -135,7 +135,7 @@ export class Compiler {
                     index += 1
                     jump.offset = index - jump.offset;
 
-                    let next_jump = Tokens.createJumpToken( index, false );
+                    let next_jump = Tokens.createJumpToken( index, { synthetized : 'ELSE' } );
                     jumps.push(next_jump)
                     yield next_jump;
                 }
@@ -148,7 +148,7 @@ export class Compiler {
                 // BEGIN UNTIL
                 // -------------------------------------------------------------
                 else if (t.value == 'BEGIN') {
-                    let jump = Tokens.createJumpToken( index, true );
+                    let jump = Tokens.createConditionalJumpToken( index, { synthetized : 'BEGIN' } );
                     jumps.push(jump);
                     continue;
                 }
@@ -156,10 +156,11 @@ export class Compiler {
                     let jump = jumps.pop() as Tokens.JumpToken;
                     index += 1;
                     jump.offset = jump.offset - index;
+                    jump.meta.synthetized += '/UNTIL';
                     yield jump;
                 }
                 else if (t.value == 'WHILE') {
-                    let jump = Tokens.createJumpToken( index, true );
+                    let jump = Tokens.createConditionalJumpToken( index, { synthetized : 'WHILE' } );
                     jumps.push(jump);
                     index += 1;
                     yield jump;
@@ -172,8 +173,10 @@ export class Compiler {
 
                     repeat_jump.offset      = repeat_jump.offset - index;
                     repeat_jump.conditional = false;
+                    repeat_jump.meta.synthetized += '/REPEAT';
 
                     while_jump.offset = index - repeat_jump.offset;
+                    while_jump.meta.synthetized += '/WHILE';
 
                     yield repeat_jump;
                 }
@@ -181,27 +184,28 @@ export class Compiler {
                 // DO LOOP
                 // -------------------------------------------------------------
                 else if (t.value == 'DO') {
-                    let jump = Tokens.createJumpToken( index += 2, true );
+                    let jump = Tokens.createConditionalJumpToken( index += 2, { synthetized : 'DO' } );
                     jumps.push(jump);
                     index += 3;
-                    yield Tokens.createWordToken("SWAP");
-                    yield Tokens.createWordToken(">R!");
-                    yield Tokens.createNumberToken("1");   // loop returns here
-                    yield Tokens.createWordToken("+");
-                    yield Tokens.createWordToken(">R!");
+                    yield Tokens.createWordToken("SWAP", { synthetized : 'DO' });
+                    yield Tokens.createWordToken(">R!",  { synthetized : 'DO' });
+                    yield Tokens.createNumberToken("1",  { synthetized : 'DO' });   // loop returns here
+                    yield Tokens.createWordToken("+",    { synthetized : 'DO' });
+                    yield Tokens.createWordToken(">R!",  { synthetized : 'DO' });
                 }
                 else if (t.value == 'LOOP') {
                     let jump = jumps.pop() as Tokens.JumpToken;
                     index += 5;
                     jump.offset = jump.offset - index;
+                    jump.meta.synthetized += '/LOOP';
                     index += 2;
-                    yield Tokens.createWordToken("<R!");
-                    yield Tokens.createWordToken("DUP");
-                    yield Tokens.createWordToken(".R!");
-                    yield Tokens.createWordToken(">=");
+                    yield Tokens.createWordToken("<R!",  { synthetized : 'LOOP' });
+                    yield Tokens.createWordToken("DUP",  { synthetized : 'LOOP' });
+                    yield Tokens.createWordToken(".R!",  { synthetized : 'LOOP' });
+                    yield Tokens.createWordToken(">=",   { synthetized : 'LOOP' });
                     yield jump;
-                    yield Tokens.createWordToken("DROP");
-                    yield Tokens.createWordToken("^R!");
+                    yield Tokens.createWordToken("DROP", { synthetized : 'LOOP' });
+                    yield Tokens.createWordToken("^R!",  { synthetized : 'LOOP' });
                 }
                 else {
                     index++;

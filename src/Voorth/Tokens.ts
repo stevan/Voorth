@@ -3,12 +3,17 @@ import { DEBUG, LOG } from './Util/Logger';
 
 export namespace Tokens {
 
-    export type NumberToken  = { type : 'NUMBER',  value : string }
-    export type StringToken  = { type : 'STRING',  value : string }
-    export type BooleanToken = { type : 'BOOLEAN', value : string }
-    export type WordToken    = { type : 'WORD',    value : string }
-    export type JumpToken    = { type : 'JUMP',    offset : number, conditional : boolean }
-    export type CommentToken = { type : 'COMMENT', value : string }
+    export type TokenMeta = {
+        // TODO - add info about soure and position, etc.
+        synthetized? : string
+    };
+
+    export type NumberToken  = { type : 'NUMBER',  value : string, meta : TokenMeta }
+    export type StringToken  = { type : 'STRING',  value : string, meta : TokenMeta }
+    export type BooleanToken = { type : 'BOOLEAN', value : string, meta : TokenMeta }
+    export type WordToken    = { type : 'WORD',    value : string, meta : TokenMeta }
+    export type JumpToken    = { type : 'JUMP',   offset : number, conditional : boolean, meta : TokenMeta }
+    export type CommentToken = { type : 'COMMENT', value : string, meta : TokenMeta }
 
     export type Token =
         | NumberToken
@@ -32,12 +37,28 @@ export namespace Tokens {
         return isNumberToken(t) || isStringToken(t) || isBooleanToken(t)
     }
 
-    export function createNumberToken  (v : string) : NumberToken  { return { type : 'NUMBER',  value : v } as NumberToken  }
-    export function createStringToken  (v : string) : StringToken  { return { type : 'STRING',  value : v } as StringToken  }
-    export function createBooleanToken (v : string) : BooleanToken { return { type : 'BOOLEAN', value : v } as BooleanToken }
-    export function createWordToken    (v : string) : WordToken    { return { type : 'WORD',    value : v } as WordToken    }
-    export function createJumpToken ( o : number, c : boolean = false) : JumpToken {
-        return { type : 'JUMP', offset: o, conditional : c } as JumpToken
+    export function createNumberToken (v : string, m : TokenMeta = {} as TokenMeta) : NumberToken {
+        return { type : 'NUMBER', value : v, meta : m } as NumberToken
+    }
+
+    export function createStringToken (v : string, m : TokenMeta = {} as TokenMeta) : StringToken {
+        return { type : 'STRING', value : v, meta : m } as StringToken
+    }
+
+    export function createBooleanToken (v : string, m : TokenMeta = {} as TokenMeta) : BooleanToken {
+        return { type : 'BOOLEAN', value : v, meta : m } as BooleanToken
+    }
+
+    export function createWordToken (v : string, m : TokenMeta = {} as TokenMeta) : WordToken {
+        return { type : 'WORD', value : v, meta : m } as WordToken
+    }
+
+    export function createJumpToken (o : number, m : TokenMeta = {} as TokenMeta) : JumpToken {
+        return { type : 'JUMP', offset: o, conditional : false, meta : m } as JumpToken
+    }
+
+    export function createConditionalJumpToken (o : number, m : TokenMeta = {} as TokenMeta) : JumpToken {
+        return { type : 'JUMP', offset: o, conditional : true, meta : m } as JumpToken
     }
 
     const IS_NUMBER   = /^-?[0-9][0-9_]*$/;
@@ -56,20 +77,20 @@ export namespace Tokens {
             switch (true) {
             case IS_COMMENT.test(m):
                 if (includeComments) {
-                    yield { type: 'COMMENT', value : m }
+                    yield { type: 'COMMENT', value : m, meta : {} as TokenMeta } as CommentToken
                 }
                 break;
             case IS_STRING.test(m):
-                yield { type: 'STRING', value : m }
+                yield createStringToken(m)
                 break;
             case IS_NUMBER.test(m):
-                yield { type: 'NUMBER', value : m }
+                yield createNumberToken(m)
                 break;
             case IS_BOOLEAN.test(m):
-                yield { type: 'BOOLEAN', value : m }
+                yield createBooleanToken(m)
                 break;
             case IS_WORD.test(m):
-                yield { type: 'WORD', value : m }
+                yield createWordToken(m)
                 break;
             default:
                 throw new Error(`Unrecognized match ${m}`);
